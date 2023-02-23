@@ -1,4 +1,5 @@
 import { createTRPCRouter } from "../trpc";
+import createNote from "./notes/createNote";
 import deleteNote from "./notes/deleteNote";
 import getNote from "./notes/getNote";
 import shareNote from "./notes/shareNote";
@@ -11,4 +12,5 @@ export const notesRouter = createTRPCRouter({
     unshareNote: unshareNote(),
     shareNote: shareNote(),
     updateNote: updateNote(),
+    createNote: createNote(),
 });
