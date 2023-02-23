@@ -79,6 +79,8 @@ model Notes {
   folder    Folders? @relation(fields: [folderId], references: [id], onDelete: Cascade)
   folderId  String?
   shared    Shared[]
+  fullRead  Boolean  @default(false)
+  fullWrite Boolean  @default(false)
 
   @@index([folderId])
   @@index([userId])
