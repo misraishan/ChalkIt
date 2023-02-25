@@ -8,7 +8,7 @@ export default function deleteUser() {
         id: z.string(),
       })
     )
-    .query(({ ctx, input }) => {
+    .mutation(async ({ ctx, input }) => {
       if (input.id === ctx.session.user.id) {
         return ctx.prisma.user.delete({
           where: {
