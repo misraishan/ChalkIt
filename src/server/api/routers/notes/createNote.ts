@@ -7,7 +7,7 @@ export default function createNote() {
     .input(
       z.object({
         title: z.string(),
-        folderId: z.string().optional(),
+        folderId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {

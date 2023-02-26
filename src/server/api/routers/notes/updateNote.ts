@@ -10,6 +10,7 @@ export default function updateNote() {
         title: z.string().optional(),
         fullRead: z.boolean().optional(),
         fullWrite: z.boolean().optional(),
+        folderId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {

@@ -6,7 +6,7 @@ export default function createFolder() {
     .input(
       z.object({
         name: z.string(),
-        parentId: z.string().optional(),
+        parentId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {

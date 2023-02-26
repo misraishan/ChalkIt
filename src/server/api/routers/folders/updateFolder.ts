@@ -8,6 +8,7 @@ export default function updateFolder() {
       z.object({
         id: z.string(),
         name: z.string().optional(),
+        parentId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
