@@ -42,14 +42,7 @@ export default function Dashboard() {
       setFolders(data.folders);
       setNotes(data.notes);
     }
-  }, [
-    data,
-    isLoading,
-    session?.user.id,
-    session?.user.name,
-    user?.name,
-    user?.userId,
-  ]);
+  }, [data, isLoading]);
 
   const { mutate: updateUser } = api.users.updateUser.useMutation();
   const handleUpdateUser = () => {
@@ -71,19 +64,19 @@ export default function Dashboard() {
   const { mutate: createFolder } = api.folders.createFolder.useMutation();
   const { mutate: createNote } = api.notes.createNote.useMutation();
 
-  const handleCreateFolder = () => {
+  const handleCreateFolder = (name: string, parentId: string | null) => {
     createFolder({
-      name: "New Folder",
-      // userId: session?.user.id as string,
+      name: name,
+      parentId,
     });
   };
 
-  const handleCreateNote = () => {
-    const note = createNote({
-      title: "New Note",
+  const handleCreateNote = (name: string, folderId: string | null) => {
+    console.log("creating note");
+    createNote({
+      title: name,
+      folderId,
     });
-
-    console.log(note);
   };
 
   if (status === "loading") {
@@ -101,9 +94,10 @@ export default function Dashboard() {
         folders={folders}
         user={user}
         session={session}
-        handleNewFolder={handleCreateFolder}
-        handleNewNote={handleCreateNote}
+        handleNewFolder={(name, parentId) => handleCreateFolder(name, parentId)}
+        handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
       />
+      <div className="w-0.5 bg-accent"></div>
       <div className="flex w-full flex-col">
         <div className="flex flex-row items-center justify-between p-4">
           <h1 className="text-2xl font-bold">Notes</h1>
