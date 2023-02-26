@@ -5,6 +5,8 @@ import { RadialProgress } from "react-daisyui";
 import { api } from "~/utils/api";
 import SideFileSystem from "../components/SideFileSystem";
 import FileTable from "../components/dashboard/FileTable";
+import Recent from "../components/dashboard/Recent";
+import Head from "next/head";
 
 function generateUserId(username: string) {
   return (
@@ -43,7 +45,7 @@ export default function Dashboard() {
       setFolders(data.folders);
       setNotes(data.notes);
     }
-  }, [data, isLoading]);
+  }, [data, isLoading, setUser, setFolders, setNotes]);
 
   const { mutate: updateUser } = api.users.updateUser.useMutation();
   const handleUpdateUser = () => {
@@ -89,18 +91,27 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen flex-row">
-      <SideFileSystem
-        notes={notes}
-        folders={folders}
-        user={user}
-        session={session}
-        handleNewFolder={(name, parentId) => handleCreateFolder(name, parentId)}
-        handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
-      />
-      <div className="w-0.5 bg-accent"></div>
-
-      <FileTable notes={notes} folders={folders} />
-    </div>
+    <>
+      <Head>
+        <title>Dashboard</title>
+      </Head>
+      <div className="flex h-screen flex-row">
+        <SideFileSystem
+          notes={notes}
+          folders={folders}
+          user={user}
+          session={session}
+          handleNewFolder={(name, parentId) =>
+            handleCreateFolder(name, parentId)
+          }
+          handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
+        />
+        <div className="w-0.5 bg-accent"></div>
+        <div className="w-full">
+          <Recent notes={notes} folders={folders} />
+          <FileTable notes={notes} folders={folders} />
+        </div>
+      </div>
+    </>
   );
 }
