@@ -14,7 +14,7 @@ export default function getFolder() {
         where: { id: input.id },
         include: {
           _count: { select: { notes: true } },
-          notes: { orderBy: { title: "asc" } },
+          notes: { orderBy: { name: "asc" } },
         },
       });
 

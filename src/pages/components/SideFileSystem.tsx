@@ -155,7 +155,7 @@ export default function SideFileSystem({
               return (
                 <div className="flex flex-row items-center gap-4" key={note.id}>
                   <HiDocumentText size={24} />
-                  {note.title}
+                  {note.name}
                 </div>
               );
             }

@@ -7,7 +7,7 @@ export default function updateNote() {
     .input(
       z.object({
         id: z.string(),
-        title: z.string().optional(),
+        name: z.string().optional(),
         fullRead: z.boolean().optional(),
         fullWrite: z.boolean().optional(),
         folderId: z.string().optional().nullable(),
@@ -29,7 +29,7 @@ export default function updateNote() {
       await ctx.prisma.notes.update({
         where: { id: input.id },
         data: {
-          title: input.title,
+          name: input.name,
           fullRead: input.fullRead,
           fullWrite: input.fullWrite,
         },

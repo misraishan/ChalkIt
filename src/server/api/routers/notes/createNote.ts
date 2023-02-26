@@ -6,14 +6,14 @@ export default function createNote() {
   return protectedProcedure
     .input(
       z.object({
-        title: z.string(),
+        name: z.string(),
         folderId: z.string().optional().nullable(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const note = await ctx.prisma.notes.create({
         data: {
-          title: input.title,
+          name: input.name,
           userId: ctx.session?.user.id,
           folderId: input.folderId,
         },

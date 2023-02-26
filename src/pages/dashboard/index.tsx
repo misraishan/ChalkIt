@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { RadialProgress } from "react-daisyui";
 import { api } from "~/utils/api";
 import SideFileSystem from "../components/SideFileSystem";
+import FileTable from "../components/dashboard/FileTable";
 
 function generateUserId(username: string) {
   return (
@@ -74,7 +75,7 @@ export default function Dashboard() {
   const handleCreateNote = (name: string, folderId: string | null) => {
     console.log("creating note");
     createNote({
-      title: name,
+      name: name,
       folderId,
     });
   };
@@ -98,22 +99,8 @@ export default function Dashboard() {
         handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
       />
       <div className="w-0.5 bg-accent"></div>
-      <div className="flex w-full flex-col">
-        <div className="flex flex-row items-center justify-between p-4">
-          <h1 className="text-2xl font-bold">Notes</h1>
-          <button className="btn-primary btn" onClick={() => handleCreateNote}>
-            Create Note
-          </button>
-        </div>
-        <div className="flex flex-col gap-4 p-4">
-          {notes.map((note: Notes) => (
-            <div className="flex flex-row items-center gap-4" key={note.id}>
-              {/* <HiDocumentText size={24} /> */}
-              {note.title}
-            </div>
-          ))}
-        </div>
-      </div>
+
+      <FileTable notes={notes} folders={folders} />
     </div>
   );
 }
