@@ -17,11 +17,13 @@ export default function getByParentFolder() {
         },
       });
 
+      const parent = await ctx.prisma.folders.findUnique({ where: { id: input.id } });
+
       if (!folder) {
         throw new TRPCError({ code: "NOT_FOUND" });
       }
 
-      if (ctx.session?.user.id !== folder[0]?.userId) {
+      if (ctx.session?.user.id !== parent?.userId) {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
