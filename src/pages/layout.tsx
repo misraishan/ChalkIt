@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "./UserContext";
+import { useRouter } from "next/router";
 
 function generateUserId(username: string) {
   return (
@@ -16,6 +17,7 @@ function generateUserId(username: string) {
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -30,7 +32,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const [folders, setFolders] = useState([] as Folders[] | null);
   const [notes, setNotes] = useState([] as Notes[] | null);
-
 
   const { data, isLoading } = api.users.getUser.useQuery({
     id: session?.user.id as string,
@@ -50,14 +51,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { mutate: createFolder } = api.folders.createFolder.useMutation();
   const { mutate: createNote } = api.notes.createNote.useMutation();
 
-  const handleCreateFolder = (name: string, parentId: string | null) => {
+  const handleCreateFolder = (name: string) => {
+    const parentId = router.query.folderId ? router.query.folderId[router.query.folderId.length - 1] : null;
+    console.log(parentId);
     createFolder({
       name: name,
       parentId,
     });
   };
 
-  const handleCreateNote = (name: string, folderId: string | null) => {
+  const handleCreateNote = (name: string) => {
+    const folderId = router.query.folderId ? router.query.folderId[router.query.folderId.length - 1] : null;
     createNote({
       name: name,
       folderId,
@@ -87,25 +91,23 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setFolders,
     notes,
     setNotes,
-  }
+  };
 
   return (
     <UserContext.Provider value={values}>
       <div className="flex h-screen flex-row">
         {session && notes && folders && user && (
           <SideFileSystem
-            notes={notes}
-            folders={folders}
             user={user}
             session={session}
-            handleNewFolder={(name, parentId) =>
-              handleCreateFolder(name, parentId)
-            }
-            handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
+            handleNewFolder={(name) => handleCreateFolder(name)}
+            handleNewNote={(name) => handleCreateNote(name)}
           />
         )}
         <div className="w-0.5 bg-accent"></div>
-        <div className="w-full">{children}</div>
+        <div className="w-full overflow-y-auto overflow-x-hidden">
+          {children}
+        </div>
       </div>
     </UserContext.Provider>
   );

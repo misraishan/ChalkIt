@@ -28,7 +28,7 @@ export default function Recent() {
       .splice(0, 10);
   } else {
     return (
-      <div className="flex flex-row overflow-x-auto overflow-y-auto children:m-4 children:h-36 children:w-36">
+      <div className="flex flex-row overflow-x-auto children:m-4 children:h-36 children:w-36">
         <Card>
           <div className="flex flex-col items-center">
             <Card.Body className="flex items-center justify-center">
@@ -41,15 +41,15 @@ export default function Recent() {
   }
 
   return (
-    <div className="flex flex-row overflow-x-auto overflow-y-auto children:m-4 children:h-36 children:w-36">
+    <div className="flex flex-row overflow-x-auto children:m-4 children:w-36">
       {mostRecent.map((item) => (
         <Card key={item.id}>
           <div className="flex flex-col items-center">
             <Card.Body className="flex items-center justify-center">
               {item.type === "folder" ? (
-                <HiFolderOpen size={48} />
+                <HiFolderOpen size={36} />
               ) : (
-                <HiDocumentText size={48} />
+                <HiDocumentText size={36} />
               )}
               <span className="text-center text-lg">{item.name}</span>
             </Card.Body>

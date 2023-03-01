@@ -11,7 +11,7 @@ export default function Dashboard() {
       </Head>
       <Layout>
         <Recent />
-        <FileTable />
+        <FileTable folder={null}/>
       </Layout>
     </>
   );

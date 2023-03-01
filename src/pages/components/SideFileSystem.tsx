@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { type Shared, type Folders, type Notes } from "@prisma/client";
 import { type Session } from "next-auth";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Button, Dropdown, Modal } from "react-daisyui";
 import {
   HiFolderOpen,
@@ -10,6 +10,7 @@ import {
   HiDocumentAdd,
 } from "react-icons/hi";
 import Link from "next/link";
+import UserContext from "../UserContext";
 
 enum NewType {
   folder = "folder",
@@ -18,15 +19,11 @@ enum NewType {
 }
 
 export default function SideFileSystem({
-  notes,
-  folders,
   user,
   session,
   handleNewNote,
   handleNewFolder,
 }: {
-  notes: Notes[];
-  folders: Folders[];
   user:
     | {
         notes: Notes[];
@@ -38,13 +35,14 @@ export default function SideFileSystem({
     | null
     | undefined;
   session: Session;
-  handleNewNote: (name: string, folderId: string | null) => void;
-  handleNewFolder: (name: string, parentId: string | null) => void;
+  handleNewNote: (name: string) => void;
+  handleNewFolder: (name: string) => void;
 }) {
   const [name, setName] = useState("");
-  const [parentId, setParentId] = useState(null as string | null);
   const [visible, setVisible] = useState(false);
   const [newType, setType] = useState("" as NewType);
+
+  const { folders, notes } = useContext(UserContext);
 
   const toggleVisible = ({ type }: { type: NewType }) => {
     if (type === NewType.null) {
@@ -118,10 +116,9 @@ export default function SideFileSystem({
               onClick={() => {
                 console.log(name, newType);
                 if (newType === NewType.folder) {
-                  // TODO: Change null, null to parentId, userId
-                  handleNewFolder(name, null);
+                  handleNewFolder(name);
                 } else if (newType === NewType.note) {
-                  handleNewNote(name, null);
+                  handleNewNote(name);
                 }
                 toggleVisible({ type: NewType.null });
               }}
@@ -132,32 +129,37 @@ export default function SideFileSystem({
         </Modal>
 
         <div className="flex flex-col gap-4 p-4">
-          {folders.map(
-            (folder: Folders) =>
-              folder.parentId === null && (
-                <div
-                  className="flex flex-row items-center gap-4"
-                  key={folder.id}
-                >
-                  <HiFolderOpen size={24} />
-                  {folder.name}
-                  {/* {folder.parentId === parentId && (
+          {folders &&
+            folders.map(
+              (folder: Folders) =>
+                folder.parentId === null && (
+                  <div
+                    className="flex flex-row items-center gap-4"
+                    key={folder.id}
+                  >
+                    <HiFolderOpen size={24} />
+                    {folder.name}
+                    {/* {folder.parentId === parentId && (
                     <div className="flex flex-col gap-4">
                       {}
                   )} */}
-                </div>
-              )
-          )}
-          {notes.map((note: Notes) => {
-            if (note.folderId === null) {
-              return (
-                <div className="flex flex-row items-center gap-4" key={note.id}>
-                  <HiDocumentText size={24} />
-                  {note.name}
-                </div>
-              );
-            }
-          })}
+                  </div>
+                )
+            )}
+          {notes &&
+            notes.map((note: Notes) => {
+              if (note.folderId === null) {
+                return (
+                  <div
+                    className="flex flex-row items-center gap-4"
+                    key={note.id}
+                  >
+                    <HiDocumentText size={24} />
+                    {note.name}
+                  </div>
+                );
+              }
+            })}
         </div>
       </div>
     </div>
