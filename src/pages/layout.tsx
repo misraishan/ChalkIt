@@ -6,7 +6,7 @@ import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "./UserContext";
 import { useRouter } from "next/router";
 import { Alert, Toast } from "react-daisyui";
-
+import Loading from "./components/handlerComponents/Loading";
 
 enum ToastType {
   Info = "info",
@@ -37,9 +37,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [folders, setFolders] = useState([] as Folders[] | null);
   const [notes, setNotes] = useState([] as Notes[] | null);
 
-  const { data, isLoading } = session?.user ? api.users.getUser.useQuery({
-    id: session?.user.id,
-  }) : { data: null, isLoading: false };
+  const { data, isLoading, isError } = api.users.getUser.useQuery({
+    id: session?.user.id as string,
+  });
 
   const [user, setUser] = useState(data);
 
@@ -112,7 +112,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     });
   };
 
-
   const values = {
     folders,
     setFolders,
@@ -122,6 +121,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider value={values}>
+      {isLoading || isError && <Loading />}
       <div className="flex h-screen flex-row">
         {session && notes && folders && user && (
           <SideFileSystem
