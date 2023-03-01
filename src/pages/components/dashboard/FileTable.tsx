@@ -1,17 +1,13 @@
-import { type Folders, type Notes } from "@prisma/client";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Table } from "react-daisyui";
+import UserContext from "~/pages/UserContext";
 
-export default function FileTable({
-  folders,
-  notes,
-}: {
-  folders: Folders[];
-  notes: Notes[];
-}) {
-  const [filterType, setFilterType] = useState(
-    "all" as "all" | "folders" | "notes"
-  );
+export default function FileTable() {
+  // const [filterType, setFilterType] = useState(
+  //   "all" as "all" | "folders" | "notes"
+  // );
+  const ctx = useContext(UserContext);
+
   return (
     <div className="flex w-full flex-col children:bg-transparent">
       <Table dataTheme="" className="children:bg-transparent">
@@ -22,7 +18,7 @@ export default function FileTable({
           <span>Type</span>
         </Table.Head>
         <Table.Body>
-          {folders.map((folder) => (
+          {ctx.folders && ctx.folders?.map((folder) => (
             <Table.Row key={folder.id} className="bg-transparent">
               <span>{folder.name}</span>
               <span>{folder.updatedAt.toISOString()}</span>
@@ -30,7 +26,7 @@ export default function FileTable({
               <span>Folder</span>
             </Table.Row>
           ))}
-          {notes.map((note) => (
+          {ctx.notes && ctx.notes.map((note) => (
             <Table.Row key={note.id}>
               <span>{note.name}</span>
               <span>{note.updatedAt.toISOString()}</span>

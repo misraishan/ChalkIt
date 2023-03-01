@@ -2,13 +2,14 @@ import Image from "next/image";
 import { type Shared, type Folders, type Notes } from "@prisma/client";
 import { type Session } from "next-auth";
 import { useState } from "react";
-import { Dropdown, Modal } from "react-daisyui";
+import { Button, Dropdown, Modal } from "react-daisyui";
 import {
   HiFolderOpen,
   HiDocumentText,
   HiFolderAdd,
   HiDocumentAdd,
 } from "react-icons/hi";
+import Link from "next/link";
 
 enum NewType {
   folder = "folder",
@@ -72,31 +73,28 @@ export default function SideFileSystem({
           <div className="justify-start text-start text-xl">{user?.userId}</div>
         </div>
 
-        <Dropdown
-        hover
-        horizontal="center"
-        className="flex items-center justify-center w-full h-12 text-xl"
-        >
-          <Dropdown.Toggle
-            color="secondary"
-          >
-            New +
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <Dropdown.Item
-              onClick={() => toggleVisible({ type: NewType.folder })}
-            >
-              <HiFolderAdd size={24} />
-              Folder
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => toggleVisible({ type: NewType.note })}
-            >
-              <HiDocumentAdd size={24} />
-              Note
-            </Dropdown.Item>
-          </Dropdown.Menu>
-        </Dropdown>
+        <div className="flex flex-row justify-center children:mx-2">
+          <Link href={"/home"}>
+            <Button color="accent">Home</Button>
+          </Link>
+          <Dropdown hover horizontal="center">
+            <Dropdown.Toggle color="secondary">New +</Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item
+                onClick={() => toggleVisible({ type: NewType.folder })}
+              >
+                <HiFolderAdd size={24} />
+                Folder
+              </Dropdown.Item>
+              <Dropdown.Item
+                onClick={() => toggleVisible({ type: NewType.note })}
+              >
+                <HiDocumentAdd size={24} />
+                Note
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
 
         <Modal open={visible}>
           <Modal.Header>Create Folder</Modal.Header>

@@ -52,7 +52,7 @@ const Home: NextPage = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
               <Link
                 className="card-bordered flex max-w-xs flex-col gap-4 rounded-xl bg-success/30 p-4 text-white hover:bg-success/60"
-                href="/dashboard"
+                href="/home"
               >
                 <h3 className="text-2xl font-bold">Dashboard →</h3>
               </Link>
