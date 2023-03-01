@@ -41,7 +41,7 @@ export default function Recent() {
   }
 
   return (
-    <div className="flex flex-row overflow-x-auto children:m-4 children:w-36">
+    <div className="flex flex-row overflow-x-auto children:m-4 children:max-h-36 children:w-36 children:overflow-x-hidden">
       {mostRecent.map((item) => (
         <Card key={item.id}>
           <div className="flex flex-col items-center">

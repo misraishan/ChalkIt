@@ -57,7 +57,7 @@ export default function SideFileSystem({
   return (
     <div className="w-1/5 bg-neutral">
       <div className="flex h-screen flex-col">
-        <div className="flex flex-row items-center justify-between p-4">
+        <div className="flex flex-row items-center p-4">
           <div className="avatar">
             <div className="mask mask-circle h-14 w-14">
               <Image
@@ -68,7 +68,7 @@ export default function SideFileSystem({
               />
             </div>
           </div>
-          <div className="justify-start text-start text-xl">{user?.userId}</div>
+          <div className="justify-start text-start text-xl mx-2">{user?.userId}</div>
         </div>
 
         <div className="flex flex-row justify-center children:mx-2">

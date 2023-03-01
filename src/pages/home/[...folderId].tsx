@@ -3,8 +3,8 @@ import FileTable from "../components/dashboard/FileTable";
 import Layout from "../layout";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import Loading from "../components/Loading";
-import Error from "../components/Error";
+import Loading from "../components/handlerComponents/Loading";
+import Error from "../components/handlerComponents/Error";
 
 export default function FolderId() {
   const router = useRouter();
@@ -30,9 +30,12 @@ export default function FolderId() {
       <Layout>
         {isLoading && <Loading />}
         {isError && <Error />}
+
         {folder && (
           <>
-            <h1 className="text-2xl font-bold">{folder.name}</h1>
+            <h1 className="m-2 text-4xl font-bold text-secondary">
+              {folder.name}
+            </h1>
             <FileTable folder={folder} />
           </>
         )}

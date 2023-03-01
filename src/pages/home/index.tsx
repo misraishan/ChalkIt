@@ -11,6 +11,7 @@ export default function Dashboard() {
       </Head>
       <Layout>
         <Recent />
+        <h1 className="my-2 text-4xl font-bold">Home</h1>
         <FileTable folder={null}/>
       </Layout>
     </>

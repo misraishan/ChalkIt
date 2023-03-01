@@ -5,20 +5,24 @@ import { api } from "~/utils/api";
 import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "./UserContext";
 import { useRouter } from "next/router";
+import { Alert, Toast } from "react-daisyui";
 
-function generateUserId(username: string) {
-  return (
-    username +
-    "#" +
-    Math.floor(Math.random() * 10000)
-      .toString()
-      .padStart(4, "0")
-  );
+
+enum ToastType {
+  Info = "info",
+  Success = "success",
+  Warning = "warning",
+  Error = "error",
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { data: session, status } = useSession({
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: ToastType.Info || undefined,
+  });
+  const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
       return {
@@ -33,9 +37,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [folders, setFolders] = useState([] as Folders[] | null);
   const [notes, setNotes] = useState([] as Notes[] | null);
 
-  const { data, isLoading } = api.users.getUser.useQuery({
-    id: session?.user.id as string,
-  });
+  const { data, isLoading } = session?.user ? api.users.getUser.useQuery({
+    id: session?.user.id,
+  }) : { data: null, isLoading: false };
 
   const [user, setUser] = useState(data);
 
@@ -46,14 +50,52 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setFolders(data.folders);
       setNotes(data.notes);
     }
-  }, [data, isLoading, setUser]);
+  }, [data, isLoading]);
 
-  const { mutate: createFolder } = api.folders.createFolder.useMutation();
-  const { mutate: createNote } = api.notes.createNote.useMutation();
+  const {
+    mutate: createFolder,
+    isLoading: isCreateFolderLoading,
+    isSuccess: isFolderSuccess,
+  } = api.folders.createFolder.useMutation();
+  const {
+    mutate: createNote,
+    isLoading: isCreateNoteLoading,
+    isSuccess: isNoteSuccess,
+  } = api.notes.createNote.useMutation();
+
+  useEffect(() => {
+    if (isCreateFolderLoading || isCreateNoteLoading) {
+      setToast({
+        show: true,
+        message: "Creating...",
+        type: ToastType.Info,
+      });
+    }
+    if (isNoteSuccess || isFolderSuccess) {
+      setToast({
+        show: true,
+        message: "Created successfully!",
+        type: ToastType.Success,
+      });
+    }
+    setTimeout(() => {
+      setToast({
+        show: false,
+        message: "",
+        type: ToastType.Info,
+      });
+    }, 3000);
+  }, [
+    isNoteSuccess,
+    isFolderSuccess,
+    isCreateFolderLoading,
+    isCreateNoteLoading,
+  ]);
 
   const handleCreateFolder = (name: string) => {
-    const parentId = router.query.folderId ? router.query.folderId[router.query.folderId.length - 1] : null;
-    console.log(parentId);
+    const parentId = router.query.folderId
+      ? router.query.folderId[router.query.folderId.length - 1]
+      : null;
     createFolder({
       name: name,
       parentId,
@@ -61,30 +103,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   };
 
   const handleCreateNote = (name: string) => {
-    const folderId = router.query.folderId ? router.query.folderId[router.query.folderId.length - 1] : null;
+    const folderId = router.query.folderId
+      ? router.query.folderId[router.query.folderId.length - 1]
+      : null;
     createNote({
       name: name,
       folderId,
     });
   };
 
-  const { mutate: updateUser } = api.users.updateUser.useMutation();
-  const handleUpdateUser = () => {
-    if (!user || user.userId || status !== "authenticated" || !session?.user.id)
-      return;
-    console.log("updating user");
-    console.log(user);
-    updateUser({
-      id: session?.user.id,
-      userId: generateUserId(user?.name?.split(" ")[0] || "User"),
-    });
-  };
-
-  if (status === "authenticated") {
-    if (!user?.userId) {
-      handleUpdateUser();
-    }
-  }
 
   const values = {
     folders,
@@ -108,6 +135,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="w-full overflow-y-auto overflow-x-hidden">
           {children}
         </div>
+        {toast.show && (
+          <Toast vertical="bottom" horizontal="end">
+            <Alert status={toast.type}>{toast.message}</Alert>
+          </Toast>
+        )}
       </div>
     </UserContext.Provider>
   );
