@@ -13,6 +13,11 @@ export default function getNote() {
         where: { id: input.id },
         include: { shared: true },
       });
+
+      if (note?.userId === ctx.session?.user.id) {
+        return note;
+      }
+
       if (note?.fullRead === true) {
         return note;
       }
