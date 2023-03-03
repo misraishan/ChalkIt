@@ -8,7 +8,7 @@ import { useRouter } from "next/router";
 import { Alert, Toast } from "react-daisyui";
 import Loading from "./components/handlerComponents/Loading";
 
-enum ToastType {
+export enum ToastType {
   Info = "info",
   Success = "success",
   Warning = "warning",
@@ -52,32 +52,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }
   }, [data, isLoading]);
 
-  const {
-    mutate: createFolder,
-    isLoading: isCreateFolderLoading,
-    isSuccess: isFolderSuccess,
-  } = api.folders.createFolder.useMutation();
-  const {
-    mutate: createNote,
-    isLoading: isCreateNoteLoading,
-    isSuccess: isNoteSuccess,
-  } = api.notes.createNote.useMutation();
+  const newFolder = api.folders.createFolder.useMutation();
+  const newNote = api.notes.createNote.useMutation();
 
-  useEffect(() => {
-    if (isCreateFolderLoading || isCreateNoteLoading) {
-      setToast({
-        show: true,
-        message: "Creating...",
-        type: ToastType.Info,
-      });
-    }
-    if (isNoteSuccess || isFolderSuccess) {
-      setToast({
-        show: true,
-        message: "Created successfully!",
-        type: ToastType.Success,
-      });
-    }
+  const updateToast = (message: string, type: ToastType) => {
+    setToast({
+      show: true,
+      message,
+      type,
+    });
     setTimeout(() => {
       setToast({
         show: false,
@@ -85,31 +68,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         type: ToastType.Info,
       });
     }, 3000);
-  }, [
-    isNoteSuccess,
-    isFolderSuccess,
-    isCreateFolderLoading,
-    isCreateNoteLoading,
-  ]);
+  };
 
   const handleCreateFolder = (name: string) => {
     const parentId = router.query.folderId
       ? router.query.folderId[router.query.folderId.length - 1]
       : null;
-    createFolder({
+    newFolder.mutate({
       name: name,
       parentId,
     });
+    updateToast("Folder created", ToastType.Success);
   };
 
   const handleCreateNote = (name: string) => {
     const folderId = router.query.folderId
       ? router.query.folderId[router.query.folderId.length - 1]
       : null;
-    createNote({
+    newNote.mutate({
       name: name,
       folderId,
     });
+    updateToast("Note created", ToastType.Success);
   };
 
   const values = {
@@ -121,7 +101,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <UserContext.Provider value={values}>
-      {isLoading || isError && <Loading />}
+      {isLoading || (isError && <Loading />)}
       <div className="flex h-screen flex-row">
         {session && notes && folders && user && (
           <SideFileSystem
