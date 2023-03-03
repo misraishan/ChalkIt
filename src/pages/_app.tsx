@@ -8,6 +8,7 @@ import "~/styles/globals.css";
 import NavBar from "./components/NavBar";
 import { useRouter } from "next/router";
 import FooterBar from "./components/FooterBar";
+import "~/styles/editor.scss"
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
