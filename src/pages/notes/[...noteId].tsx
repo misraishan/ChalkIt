@@ -1,19 +1,22 @@
 import { type Shared, type Notes } from "@prisma/client";
-import { EditorContent } from "@tiptap/react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Alert, Input, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../components/handlerComponents/Loading";
-import TipTap from "../components/notes/TipTap";
 import Layout, { ToastType } from "../layout";
+import dynamic from "next/dynamic";
 
-export default function NotesEditor() {
-  const router = useRouter();
+const EditorWindow = dynamic(() => import("../components/notes/EditorWindow"), {
+  ssr: false,
+});
+
+export default function NotesEditor({ noteId }: { noteId: string }) {
   const user = useSession().data?.user;
+  const router = useRouter();
   const note = api.notes.getNote.useQuery({
-    id: router.query?.noteId ? (router.query?.noteId[0] as string) : "",
+    id: noteId,
   }).data as Notes & { shared: Shared[] };
   const [name, setName] = useState(note?.name);
   const [toast, setToast] = useState({
@@ -21,6 +24,19 @@ export default function NotesEditor() {
     message: "",
     type: ToastType.Info || undefined,
   });
+
+  let hasWrite = false;
+
+  if (note && !note.fullWrite && note.userId !== user?.id) {
+    hasWrite = note.shared.find((s) => s.userId === user?.id)?.write
+      ? true
+      : false;
+    if (!hasWrite) {
+      void router.push("/");
+    }
+  } else {
+    hasWrite = true;
+  }
 
   const renameNote = api.notes.updateNote.useMutation();
   const renameFucntion = () => {
@@ -31,19 +47,6 @@ export default function NotesEditor() {
       });
     }
   };
-
-  let hasWrite = false;
-
-  if (note && note.userId !== user?.id) {
-    hasWrite = note.shared.find((s) => s.userId === user?.id)?.write
-      ? true
-      : false;
-    if (!hasWrite) {
-      void router.push("/");
-    }
-  } else {
-    hasWrite = true;
-  }
 
   const updateToast = (message: string, type: ToastType) => {
     setToast({
@@ -60,13 +63,10 @@ export default function NotesEditor() {
     }, 3000);
   };
 
-  const editor = TipTap({
-    editable: hasWrite,
-  });
-
+  
   return (
     <Layout>
-      {editor && note ? (
+      {note ? (
         <div className="h-screen">
           {note?.name && (
             <Input
@@ -87,21 +87,7 @@ export default function NotesEditor() {
               color="accent"
             />
           )}
-          <EditorContent
-            editor={editor}
-            className={
-              "m-4 h-[93.5vh] overflow-y-scroll rounded-2xl border-2 border-accent outline-none"
-            }
-            onClick={() => {
-              editor.commands.focus();
-            }}
-            onKeyDown={(e) => {
-              if ((e.metaKey || e.ctrlKey) && e.key === "s") {
-                e.preventDefault();
-                updateToast("No need to save yourself ;)", ToastType.Success);
-              }
-            }}
-          />
+          <EditorWindow editable={hasWrite} noteId={noteId} updateToast={updateToast} />
         </div>
       ) : (
         <Loading />
@@ -114,3 +100,11 @@ export default function NotesEditor() {
     </Layout>
   );
 }
+
+export const getServerSideProps = (context: { params: { noteId: string } }) => {
+  return {
+    props: {
+      noteId: context?.params.noteId[0],
+    },
+  };
+};
