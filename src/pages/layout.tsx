@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "./UserContext";
 import { useRouter } from "next/router";
-import { Alert, Toast } from "react-daisyui";
+import { Alert, Breadcrumbs, Toast } from "react-daisyui";
 import Loading from "./components/handlerComponents/Loading";
 
 export enum ToastType {
@@ -36,6 +36,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const [folders, setFolders] = useState([] as Folders[] | null);
   const [notes, setNotes] = useState([] as Notes[] | null);
+  const [parents, setParents] = useState([] as Folders[] | null);
 
   const { data, isLoading, isError } = api.users.getUser.useQuery({
     id: session?.user.id as string,
@@ -113,6 +114,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
         <div className="w-0.5 bg-accent"></div>
         <div className="w-full overflow-y-auto overflow-x-hidden">
+          <Breadcrumbs>
+            <>
+              <Breadcrumbs.Item>Home</Breadcrumbs.Item>
+              {parents?.map((parent) => (
+                <Breadcrumbs.Item key={parent.id} href={""}>
+                  {parent.name}
+                </Breadcrumbs.Item>
+              ))}
+            </>
+          </Breadcrumbs>
           {children}
         </div>
         {toast.show && (

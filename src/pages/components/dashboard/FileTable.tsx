@@ -4,6 +4,7 @@ import UserContext from "~/pages/UserContext";
 import { useRouter } from "next/router";
 import { type Notes, type Folders } from "@prisma/client";
 import { api } from "~/utils/api";
+import { HiOutlineTrash, HiOutlineShare } from "react-icons/hi";
 
 export default function FileTable({
   folder,
@@ -33,6 +34,9 @@ export default function FileTable({
     }`;
   };
 
+  const deleteNote = api.notes.deleteNote.useMutation();
+  const deleteFolder = api.folders.deleteFolder.useMutation();
+
   return (
     <div className="flex flex-col overflow-x-auto overflow-y-auto children:bg-transparent">
       <Table dataTheme="" className="children:bg-transparent">
@@ -41,6 +45,7 @@ export default function FileTable({
           <span>Modified</span>
           <span>Created</span>
           <span>Type</span>
+          <span></span>
         </Table.Head>
         <Table.Body>
           {folders &&
@@ -60,6 +65,17 @@ export default function FileTable({
                 <span>{timeFormat(folder.updatedAt)}</span>
                 <span>{timeFormat(folder.createdAt)}</span>
                 <span>Folder</span>
+                <span>
+                  <a><HiOutlineTrash size={36}
+                    onClick={() => {
+                      deleteFolder.mutate({
+                        id: folder.id,
+                      });
+                    }}
+                  />
+                  </a>
+                  <HiOutlineShare />
+                </span>
               </Table.Row>
             ))}
           {notes &&

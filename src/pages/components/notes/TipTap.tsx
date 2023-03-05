@@ -32,8 +32,7 @@ export default function TipTap({
       Collaboration.configure({
         document: provider?.document,
       }),
-    ],
-    content: "",
+    ], 
     editorProps: {
       attributes: {
         class: "prose prose-sm m-auto",

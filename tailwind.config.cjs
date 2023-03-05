@@ -13,6 +13,13 @@ module.exports = {
     require("react-daisyui"),
     require("tailwind-children"),
   ],
+  daisyui: {
+    styled: true,
+    // DO NOT TOUCH, THIS MAKES DYNAMIC THEME???
+    // themes: ["light", "dark"],
+    // themes: [] — this makes it proper light mode
+    // themes: ["black"]
+  },
 
   reactStrictMode: true,
 };
