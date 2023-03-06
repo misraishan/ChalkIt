@@ -45,7 +45,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState(data);
 
   useEffect(() => {
-    console.log("Got data");
     if (data) {
       setUser(data);
       setFolders(data.folders);
@@ -75,22 +74,47 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     const parentId = router.query.folderId
       ? router.query.folderId[router.query.folderId.length - 1]
       : null;
-    newFolder.mutate({
-      name: name,
-      parentId,
-    });
-    updateToast("Folder created", ToastType.Success);
+    void newFolder
+      .mutateAsync({
+        name: name,
+        parentId,
+      })
+      .then((res) => {
+        if (res) {
+          setFolders((prev) => {
+            if (prev) {
+              return [...prev, res];
+            }
+            return null;
+          });
+          updateToast("Folder created", ToastType.Success);
+        }
+      });
+    updateToast("Creating folder...", ToastType.Info);
   };
 
   const handleCreateNote = (name: string) => {
     const folderId = router.query.folderId
       ? router.query.folderId[router.query.folderId.length - 1]
       : null;
-    newNote.mutate({
-      name: name,
-      folderId,
-    });
-    updateToast("Note created", ToastType.Success);
+    void newNote
+      .mutateAsync({
+        name: name,
+        folderId,
+      })
+      .then((res) => {
+        if (res) {
+          setNotes((prev) => {
+            if (prev) {
+              return [...prev, res];
+            }
+            return null;
+          });
+          updateToast("Note created", ToastType.Success);
+        }
+      });
+
+    updateToast("Creating...", ToastType.Info);
   };
 
   const values = {

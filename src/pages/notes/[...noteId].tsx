@@ -51,28 +51,34 @@ export default function NotesEditor({ noteId }: { noteId: string }) {
   };
 
   return (
-    <Layout>
-      {note ? (
-        <div className="h-screen">
-          {note?.name && (
-            <NameField name={note.name} id={noteId} hasWrite={hasWrite} />
-          )}
-          <EditorWindow
-            editable={hasWrite}
-            noteId={noteId}
-            updateToast={updateToast}
-            userName={user?.name || "Anonymous"}
-          />
-        </div>
-      ) : (
-        <Loading />
-      )}
-      {toast.show && (
-        <Toast vertical="bottom" horizontal="end">
-          <Alert status={toast.type}>{toast.message}</Alert>
-        </Toast>
-      )}
-    </Layout>
+    <>
+      <Head>
+        <title>{note?.name || "Untitled"} - Notes</title>
+        <meta name="description" content="Notes" />
+      </Head>
+      <Layout>
+        {note ? (
+          <div className="h-screen">
+            {note?.name && (
+              <NameField name={note.name} id={noteId} hasWrite={hasWrite} />
+            )}
+            <EditorWindow
+              editable={hasWrite}
+              noteId={noteId}
+              updateToast={updateToast}
+              userName={user?.name || "Anonymous"}
+            />
+          </div>
+        ) : (
+          <Loading />
+        )}
+        {toast.show && (
+          <Toast vertical="bottom" horizontal="end">
+            <Alert status={toast.type}>{toast.message}</Alert>
+          </Toast>
+        )}
+      </Layout>
+    </>
   );
 }
 

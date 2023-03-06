@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Table } from "react-daisyui";
 import UserContext from "~/contexts/UserContext";
 import { useRouter } from "next/router";
@@ -66,13 +66,15 @@ export default function FileTable({
                 <span>{timeFormat(folder.createdAt)}</span>
                 <span>Folder</span>
                 <span>
-                  <a><HiOutlineTrash size={36}
-                    onClick={() => {
-                      deleteFolder.mutate({
-                        id: folder.id,
-                      });
-                    }}
-                  />
+                  <a>
+                    <HiOutlineTrash
+                      size={36}
+                      onClick={() => {
+                        deleteFolder.mutate({
+                          id: folder.id,
+                        });
+                      }}
+                    />
                   </a>
                   <HiOutlineShare />
                 </span>

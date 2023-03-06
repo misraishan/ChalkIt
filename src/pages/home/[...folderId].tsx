@@ -25,7 +25,9 @@ export default function FolderId() {
   return (
     <>
       <Head>
-        <title></title>
+        <title>
+          {folder ? folder.name : "Loading..."}
+        </title>
       </Head>
       <Layout>
         {isLoading && <Loading />}
