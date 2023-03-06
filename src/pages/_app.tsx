@@ -5,9 +5,9 @@ import { SessionProvider } from "next-auth/react";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
-import NavBar from "./components/NavBar";
+import NavBar from "../common/components/NavBar";
 import { useRouter } from "next/router";
-import FooterBar from "./components/FooterBar";
+import FooterBar from "../common/components/FooterBar";
 import "~/styles/editor.scss"
 
 const MyApp: AppType<{ session: Session | null }> = ({

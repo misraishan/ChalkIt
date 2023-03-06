@@ -1,10 +1,10 @@
 import Head from "next/head";
-import FileTable from "../components/dashboard/FileTable";
-import Layout from "../layout";
+import FileTable from "../../common/components/dashboard/FileTable";
+import Layout from "../../common/layout";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
-import Loading from "../components/handlerComponents/Loading";
-import Error from "../components/handlerComponents/Error";
+import Loading from "../../common/components/handlerComponents/Loading";
+import Error from "../../common/components/handlerComponents/Error";
 
 export default function FolderId() {
   const router = useRouter();

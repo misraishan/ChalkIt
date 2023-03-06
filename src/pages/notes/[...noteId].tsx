@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
-import Loading from "../components/handlerComponents/Loading";
-import Layout, { ToastType } from "../layout";
-import EditorWindow from "../components/notes/EditorWindow";
-import NameField from "../components/notes/NameField";
+import Loading from "../../common/components/handlerComponents/Loading";
+import Layout, { ToastType } from "../../common/layout";
+import EditorWindow from "../../common/components/notes/EditorWindow";
+import NameField from "../../common/components/notes/NameField";
 import Head from "next/head";
 
 export default function NotesEditor({ noteId }: { noteId: string }) {

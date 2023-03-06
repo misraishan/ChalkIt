@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { api } from "~/utils/api";
 import SideFileSystem from "./components/SideFileSystem";
-import UserContext from "./UserContext";
+import UserContext from "../contexts/UserContext";
 import { useRouter } from "next/router";
 import { Alert, Breadcrumbs, Toast } from "react-daisyui";
 import Loading from "./components/handlerComponents/Loading";

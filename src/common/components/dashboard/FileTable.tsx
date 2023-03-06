@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { Table } from "react-daisyui";
-import UserContext from "~/pages/UserContext";
+import UserContext from "~/contexts/UserContext";
 import { useRouter } from "next/router";
 import { type Notes, type Folders } from "@prisma/client";
 import { api } from "~/utils/api";

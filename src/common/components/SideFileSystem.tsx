@@ -10,7 +10,7 @@ import {
   HiDocumentAdd,
 } from "react-icons/hi";
 import Link from "next/link";
-import UserContext from "../UserContext";
+import UserContext from "../../contexts/UserContext";
 
 enum NewType {
   folder = "folder",

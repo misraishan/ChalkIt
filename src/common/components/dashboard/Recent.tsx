@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { Card } from "react-daisyui";
 import { HiFolderOpen, HiDocumentText } from "react-icons/hi";
-import UserContext from "~/pages/UserContext";
+import UserContext from "~/contexts/UserContext";
 
 export default function Recent() {
   const { folders, notes } = useContext(UserContext);

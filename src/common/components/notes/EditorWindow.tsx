@@ -1,4 +1,4 @@
-import { ToastType } from "~/pages/layout";
+import { ToastType } from "~/common/layout";
 import MilkdownEditor from "./Milkdown";
 import { MilkdownProvider } from "@milkdown/react";
 

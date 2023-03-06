@@ -1,7 +1,7 @@
-import FileTable from "../components/dashboard/FileTable";
-import Recent from "../components/dashboard/Recent";
+import FileTable from "../../common/components/dashboard/FileTable";
+import Recent from "../../common/components/dashboard/Recent";
 import Head from "next/head";
-import Layout from "../layout";
+import Layout from "../../common/layout";
 
 export default function Dashboard() {
   return (
