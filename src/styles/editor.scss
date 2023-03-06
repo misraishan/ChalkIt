@@ -1,66 +1,246 @@
-.ProseMirror {
-    outline: none;
-    > * {
-        @apply mt-2 mx-4 text-primary-content;
-    }
+.milkdown {
+  outline: none;
+  > * {
+    @apply mt-2 mx-4 text-primary-content;
+  }
 
-    ul,
-    ol {
-        padding: 0 1rem;
-    }
+  /*
+  
+  
+    Code block
+  
+  
+    */
 
-    h1 {
-        @apply text-6xl;
-    }
-    h2 {
-        @apply text-5xl;
-    }
-    h3 {
-        @apply text-4xl;
-    }
-    h4 {
-        @apply text-3xl;
-    }
-    h5 {
-        @apply text-2xl;
-    }
-    h6 {
-        @apply text-xl;
-    }
+  pre {
+    @apply bg-base-300;
+    border-radius: 0.5rem;
+    color: #fff;
+    font-family: "JetBrainsMono", monospace;
+    padding: 0.75rem 1rem;
 
     code {
-        background-color: rgba(#616161, 0.1);
-        color: #616161;
+      background: none;
+      color: inherit;
+      font-size: 0.8rem;
+      padding: 0;
     }
 
-    pre {
-        background: #0d0d0d;
-        color: #fff;
-        font-family: "JetBrainsMono", monospace;
-        padding: 0.75rem 1rem;
-        border-radius: 0.5rem;
-
-        code {
-            color: inherit;
-            padding: 0;
-            background: none;
-            font-size: 0.8rem;
-        }
+    .hljs-comment,
+    .hljs-quote {
+      color: #70cff8;
     }
 
-    img {
-        max-width: 100%;
-        height: auto;
+    .hljs-variable,
+    .hljs-template-variable,
+    .hljs-attribute,
+    .hljs-tag,
+    .hljs-name,
+    .hljs-regexp,
+    .hljs-link,
+    .hljs-name,
+    .hljs-selector-id,
+    .hljs-selector-class {
+      color: #f98181;
     }
 
-    blockquote {
-        padding-left: 1rem;
-        border-left: 2px solid rgba(#0d0d0d, 0.1);
+    .hljs-number,
+    .hljs-meta,
+    .hljs-built_in,
+    .hljs-builtin-name,
+    .hljs-literal,
+    .hljs-type,
+    .hljs-params {
+      color: #fbbc88;
     }
 
-    hr {
-        border: none;
-        border-top: 2px solid rgba(#0d0d0d, 0.1);
-        margin: 2rem 0;
+    .hljs-string,
+    .hljs-symbol,
+    .hljs-bullet {
+      color: #b9f18d;
     }
+
+    .hljs-title,
+    .hljs-section {
+      color: #faf594;
+    }
+
+    .hljs-keyword,
+    .hljs-selector-tag {
+      color: #70cff8;
+    }
+
+    .hljs-emphasis {
+      font-style: italic;
+    }
+
+    .hljs-strong {
+      font-weight: 700;
+    }
+  }
+
+  /*
+  
+  
+    Lists
+  
+  
+    */
+
+  ul {
+    list-style: disc;
+    @apply px-4;
+    ul {
+      list-style: circle;
+      ul {
+        @apply list-decimal;
+      }
+    }
+  }
+  ol {
+    @apply px-4 list-decimal;
+
+    ol {
+      list-style: lower-alpha;
+      ol {
+        list-style: decimal;
+      }
+    }
+  }
+
+  /*
+  
+  
+    Headings
+  
+  
+    */
+
+  h1 {
+    @apply text-5xl;
+  }
+
+  h2 {
+    @apply text-4xl;
+  }
+
+  h3 {
+    @apply text-3xl;
+  }
+  h4 {
+    @apply text-2xl;
+  }
+  h5 {
+    @apply text-xl;
+  }
+
+  /*
+  
+  
+    Breaks
+  
+  
+    */
+
+  hr {
+    @apply border-info border-solid;
+  }
+
+  blockquote {
+    @apply border-l-4 border-base-content italic p-2 m-2;
+  }
+
+  data-placeholder {
+    @apply text-base-content;
+  }
+
+  /*
+    Tables
+    */
+
+  table {
+    @apply border-collapse border border-base-300;
+    th {
+      @apply border border-base-300;
+    }
+    td {
+      @apply border border-base-300;
+    }
+  }
+
+  a {
+    @apply text-info;
+  }
+
+  .ProseMirror p.is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+  }
+
+  /* Give a remote user a caret */
+  .collaboration-cursor__caret {
+    border-left: 1px solid #0d0d0d;
+    border-right: 1px solid #0d0d0d;
+    margin-left: -1px;
+    margin-right: -1px;
+    pointer-events: none;
+    position: relative;
+    word-break: normal;
+  }
+
+  /* Render the username above the caret */
+  .collaboration-cursor__label {
+    border-radius: 3px 3px 3px 0;
+    color: #0d0d0d;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    left: -1px;
+    line-height: normal;
+    padding: 0.1rem 0.3rem;
+    position: absolute;
+    top: -1.4em;
+    user-select: none;
+    white-space: nowrap;
+  }
 }
+
+/* this is a rough fix for the first cursor position when the first paragraph is empty */
+.ProseMirror > .ProseMirror-yjs-cursor:first-child {
+  margin-top: 16px;
+}
+.ProseMirror p:first-child, .ProseMirror h1:first-child, .ProseMirror h2:first-child, .ProseMirror h3:first-child, .ProseMirror h4:first-child, .ProseMirror h5:first-child, .ProseMirror h6:first-child {
+  margin-top: 16px
+}
+/* This gives the remote user caret. The colors are automatically overwritten*/
+.ProseMirror-yjs-cursor {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  border-color: orange;
+  word-break: normal;
+  pointer-events: none;
+}
+/* This renders the username above the caret */
+.ProseMirror-yjs-cursor > div {
+  position: absolute;
+  top: -1.05em;
+  left: -1px;
+  font-size: 13px;
+  background-color: rgb(250, 129, 0);
+  font-family: serif;
+  font-style: normal;
+  font-weight: normal;
+  line-height: normal;
+  user-select: none;
+  color: white;
+  padding-left: 2px;
+  padding-right: 2px;
+  white-space: nowrap;
+}
+
