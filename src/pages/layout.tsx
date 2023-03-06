@@ -45,13 +45,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState(data);
 
   useEffect(() => {
-    if (isLoading) return;
+    console.log("Got data");
     if (data) {
       setUser(data);
       setFolders(data.folders);
       setNotes(data.notes);
     }
-  }, [data, isLoading]);
+  }, [data]);
 
   const newFolder = api.folders.createFolder.useMutation();
   const newNote = api.notes.createNote.useMutation();
@@ -105,25 +105,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       {isLoading || (isError && <Loading />)}
       <div className="flex h-screen flex-row">
         {session && notes && folders && user && (
-          <SideFileSystem
-            user={user}
-            session={session}
-            handleNewFolder={(name) => handleCreateFolder(name)}
-            handleNewNote={(name) => handleCreateNote(name)}
-          />
+          <>
+            <SideFileSystem
+              user={user}
+              session={session}
+              handleNewFolder={(name) => handleCreateFolder(name)}
+              handleNewNote={(name) => handleCreateNote(name)}
+            />
+            <div className="w-0.5 bg-accent"></div>
+          </>
         )}
-        <div className="w-0.5 bg-accent"></div>
         <div className="w-full overflow-y-auto overflow-x-hidden">
-          <Breadcrumbs>
-            <>
-              <Breadcrumbs.Item>Home</Breadcrumbs.Item>
-              {parents?.map((parent) => (
-                <Breadcrumbs.Item key={parent.id} href={""}>
-                  {parent.name}
-                </Breadcrumbs.Item>
-              ))}
-            </>
-          </Breadcrumbs>
           {children}
         </div>
         {toast.show && (

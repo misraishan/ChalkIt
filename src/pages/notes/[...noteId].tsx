@@ -2,15 +2,13 @@ import { type Shared, type Notes } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { Alert, Input, Toast } from "react-daisyui";
+import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../components/handlerComponents/Loading";
 import Layout, { ToastType } from "../layout";
-import dynamic from "next/dynamic";
-
-const EditorWindow = dynamic(() => import("../components/notes/EditorWindow"), {
-  ssr: false,
-});
+import EditorWindow from "../components/notes/EditorWindow";
+import NameField from "../components/notes/NameField";
+import Head from "next/head";
 
 export default function NotesEditor({ noteId }: { noteId: string }) {
   const user = useSession().data?.user;
@@ -18,7 +16,6 @@ export default function NotesEditor({ noteId }: { noteId: string }) {
   const note = api.notes.getNote.useQuery({
     id: noteId,
   }).data as Notes & { shared: Shared[] };
-  const [name, setName] = useState(note?.name);
   const [toast, setToast] = useState({
     show: false,
     message: "",
@@ -38,16 +35,6 @@ export default function NotesEditor({ noteId }: { noteId: string }) {
     hasWrite = true;
   }
 
-  const renameNote = api.notes.updateNote.useMutation();
-  const renameFucntion = () => {
-    if (name !== note?.name) {
-      renameNote.mutate({
-        id: note?.id,
-        name,
-      });
-    }
-  };
-
   const updateToast = (message: string, type: ToastType) => {
     setToast({
       show: true,
@@ -63,31 +50,19 @@ export default function NotesEditor({ noteId }: { noteId: string }) {
     }, 3000);
   };
 
-  
   return (
     <Layout>
       {note ? (
         <div className="h-screen">
           {note?.name && (
-            <Input
-              className="mx-4 bg-black text-4xl text-base-content"
-              defaultValue={note.name}
-              value={name}
-              maxLength={50}
-              minLength={1}
-              onChange={(e) => {
-                const newVal = e.target.value;
-                if (newVal === note.name) {
-                  setName(note.name);
-                }
-                setName(newVal);
-                renameFucntion();
-              }}
-              disabled={!hasWrite}
-              color="accent"
-            />
+            <NameField name={note.name} id={noteId} hasWrite={hasWrite} />
           )}
-          <EditorWindow editable={hasWrite} noteId={noteId} updateToast={updateToast} />
+          <EditorWindow
+            editable={hasWrite}
+            noteId={noteId}
+            updateToast={updateToast}
+            userName={user?.name || "Anonymous"}
+          />
         </div>
       ) : (
         <Loading />
