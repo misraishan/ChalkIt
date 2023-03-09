@@ -5,4 +5,16 @@
 .milkdown {
     @apply px-2 rounded;
 }
+
+.prose {
+    max-width: 100%;
+}
+
+.milkdown .editor h1 {
+    @apply my-4 text-5xl font-bold;
+}
+
+.milkdown .editor h2 {
+    @apply my-4 text-3xl font-bold;
+}
   
