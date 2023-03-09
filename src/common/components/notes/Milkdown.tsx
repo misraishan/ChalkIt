@@ -1,4 +1,4 @@
-import { defaultValueCtx, Editor, rootCtx } from "@milkdown/core";
+import { Editor, editorViewOptionsCtx, rootCtx } from "@milkdown/core";
 import { Milkdown, useEditor } from "@milkdown/react";
 import { commonmark } from "@milkdown/preset-commonmark";
 import { collab, collabServiceCtx } from "@milkdown/plugin-collab";
@@ -22,36 +22,24 @@ import java from "refractor/lang/java";
 import kotlin from "refractor/lang/kotlin";
 import python from "refractor/lang/python";
 
-const defaultContent = `
-# H1
-## H2
-### H3
-> Quote
-- List
-- List
-- List
-1. List
-2. List
-3. List
-\`\`\`javascript
-const a = 1;
-\`\`\`
-**bold**, *italics*
-`;
-
 export default function MilkdownEditor({
   roomName,
   userName,
+  editable,
 }: {
   roomName: string;
   userName: string;
+  editable: boolean;
 }) {
   const editor = useEditor((root) => {
     return Editor.make()
       .config(nord)
       .config((ctx) => {
+        ctx.update(editorViewOptionsCtx, (prev) => ({
+          ...prev,
+          editable: () => editable,
+        }));
         ctx.set(rootCtx, root);
-        ctx.set(defaultValueCtx, defaultContent);
         ctx.set(prismConfig.key, {
           configureRefractor: (refractor) => {
             refractor.register(markdown);

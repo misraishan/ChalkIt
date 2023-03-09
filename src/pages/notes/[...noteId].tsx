@@ -1,7 +1,7 @@
 import { type Shared, type Notes } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../../common/components/handlerComponents/Loading";
@@ -13,8 +13,8 @@ import Head from "next/head";
 export default function NotesEditor() {
   const user = useSession().data?.user;
   const router = useRouter();
+  const [hasWrite, setHasWrite] = useState(false);
   const noteId = router.query?.noteId?.[0] as string;
-  console.log(noteId);
   const note = api.notes.getNote.useQuery({
     id: noteId,
   }).data as Notes & { shared: Shared[] };
@@ -24,18 +24,20 @@ export default function NotesEditor() {
     type: ToastType.Info || undefined,
   });
 
-  let hasWrite = false;
+  useEffect(() => {
+    if (note) {
+      if (note?.fullWrite || note?.userId === user?.id) setHasWrite(true);
+      else if (note.shared.length > 0) {
+        note.shared.find((s) => s.userId === user?.id)?.write
+          ? setHasWrite(true)
+          : setHasWrite(false);
+      } else if (note?.fullRead) setHasWrite(false);
 
-  if (note && !note.fullWrite && note.userId !== user?.id) {
-    hasWrite = note.shared.find((s) => s.userId === user?.id)?.write
-      ? true
-      : false;
-    if (!hasWrite) {
-      void router.push("/");
+      if (!hasWrite && !note?.fullRead) {
+        void router.push("/");
+      }
     }
-  } else {
-    hasWrite = true;
-  }
+  }, [hasWrite, note, router, user?.id]);
 
   const updateToast = (message: string, type: ToastType) => {
     setToast({

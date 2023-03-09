@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 export default function EditorWindow({
   noteId,
   userName,
+  editable,
 }: {
   editable: boolean;
   noteId: string;
@@ -20,7 +21,7 @@ export default function EditorWindow({
   return (
     <div className="m-4 h-[93vh] overflow-y-scroll rounded-2xl border-2 border-accent outline-none">
       <MilkdownProvider>
-        {isClient && <MilkdownEditor roomName={noteId} userName={userName} />}
+        {isClient && <MilkdownEditor roomName={noteId} userName={userName} editable={editable} />}
       </MilkdownProvider>
     </div>
   );
