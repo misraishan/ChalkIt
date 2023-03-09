@@ -8,7 +8,6 @@ import "~/styles/globals.css";
 import NavBar from "../common/components/NavBar";
 import { useRouter } from "next/router";
 import FooterBar from "../common/components/FooterBar";
-import "~/styles/editor.scss"
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -17,7 +16,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const router = useRouter();
   return (
     <SessionProvider session={session}>
-      <div className="bg-neutral">
+      <div>
         {router.pathname !== "/" && <NavBar />}
         <Component {...pageProps} />
         <div className="mx-4 h-1/6">

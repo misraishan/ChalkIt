@@ -55,7 +55,7 @@ export default function SideFileSystem({
   };
 
   return (
-    <div className="w-1/5 bg-neutral">
+    <div className="w-1/5">
       <div className="flex h-screen flex-col">
         <div className="flex flex-row items-center p-4">
           <div className="avatar">

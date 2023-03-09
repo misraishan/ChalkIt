@@ -1,9 +1,9 @@
-import { ToastType } from "~/common/layout";
+import { type ToastType } from "~/common/layout";
 import MilkdownEditor from "./Milkdown";
 import { MilkdownProvider } from "@milkdown/react";
+import { useState, useEffect } from "react";
 
 export default function EditorWindow({
-  updateToast,
   noteId,
   userName,
 }: {
@@ -12,15 +12,15 @@ export default function EditorWindow({
   userName: string;
   updateToast: (message: string, type: ToastType) => void;
 }) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
   return (
-    <div
-      className="remirror-theme m-4 h-[93.5vh] overflow-y-scroll rounded-2xl border-2 border-accent outline-none"
-      onClick={() => {
-        // commands.focus();
-      }}
-    >
+    <div className="m-4 h-[93vh] overflow-y-scroll rounded-2xl border-2 border-accent outline-none">
       <MilkdownProvider>
-        <MilkdownEditor roomName={noteId} userName={userName} />
+        {isClient && <MilkdownEditor roomName={noteId} userName={userName} />}
       </MilkdownProvider>
     </div>
   );

@@ -54,7 +54,10 @@ export default function NotesEditor({ noteId }: { noteId: string }) {
     <>
       <Head>
         <title>{note?.name || "Untitled"} - Notes</title>
-        <meta name="description" content="Notes" />
+        <meta
+          name="description"
+          content={`${note?.name} created on Chalkit.io`}
+        />
       </Head>
       <Layout>
         {note ? (

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { Table } from "react-daisyui";
 import UserContext from "~/contexts/UserContext";
 import { useRouter } from "next/router";
@@ -83,13 +83,7 @@ export default function FileTable({
           {notes &&
             notes.map((note) => (
               <Table.Row
-                onMouseEnter={() => {
-                  void router.prefetch(`/notes/${note.id}`);
-                }}
                 key={note.id}
-                onMouseOver={() => {
-                  void router.prefetch(`/notes/${note.id}`);
-                }}
                 onClick={() => {
                   void router.push(`/notes/${note.id}`);
                 }}

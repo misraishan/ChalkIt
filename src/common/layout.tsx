@@ -5,7 +5,7 @@ import { api } from "~/utils/api";
 import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "../contexts/UserContext";
 import { useRouter } from "next/router";
-import { Alert, Breadcrumbs, Toast } from "react-daisyui";
+import { Alert, Toast } from "react-daisyui";
 import Loading from "./components/handlerComponents/Loading";
 
 export enum ToastType {
@@ -81,12 +81,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       })
       .then((res) => {
         if (res) {
-          setFolders((prev) => {
-            if (prev) {
-              return [...prev, res];
-            }
-            return null;
-          });
+          // TODO: Work on this section
+          // Not properly updating in sub folders yet...
+          if (res.parentId === null) {
+            setFolders((prev) => {
+              if (prev) {
+                return [...prev, res];
+              }
+              return null;
+            });
+          }
           updateToast("Folder created", ToastType.Success);
         }
       });
@@ -104,12 +108,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       })
       .then((res) => {
         if (res) {
-          setNotes((prev) => {
-            if (prev) {
-              return [...prev, res];
-            }
-            return null;
-          });
+          if (res.folderId === null) {
+            setNotes((prev) => {
+              if (prev) {
+                return [...prev, res];
+              }
+              return null;
+            });
+          }
           updateToast("Note created", ToastType.Success);
         }
       });
