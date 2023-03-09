@@ -10,9 +10,11 @@ import EditorWindow from "../../common/components/notes/EditorWindow";
 import NameField from "../../common/components/notes/NameField";
 import Head from "next/head";
 
-export default function NotesEditor({ noteId }: { noteId: string }) {
+export default function NotesEditor() {
   const user = useSession().data?.user;
   const router = useRouter();
+  const noteId = router.query?.noteId?.[0] as string;
+  console.log(noteId);
   const note = api.notes.getNote.useQuery({
     id: noteId,
   }).data as Notes & { shared: Shared[] };
@@ -84,11 +86,3 @@ export default function NotesEditor({ noteId }: { noteId: string }) {
     </>
   );
 }
-
-export const getServerSideProps = (context: { params: { noteId: string } }) => {
-  return {
-    props: {
-      noteId: context?.params.noteId[0],
-    },
-  };
-};

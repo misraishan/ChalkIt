@@ -67,6 +67,10 @@ export default function MilkdownEditor({
             refractor.register(python);
           },
         });
+        ctx.set(indentConfig.key, {
+          type: 'tab',
+          size: 4,
+        });
       })
       .use(commonmark)
       .use(collab)
