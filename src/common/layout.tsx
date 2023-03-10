@@ -25,18 +25,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession({
     required: true,
     onUnauthenticated() {
-      return {
-        redirect: {
-          destination: "/api/auth/signin",
-          permanent: false,
-        },
-      };
+      if (!router.pathname.includes("/notes/")) {
+        return {
+          redirect: {
+            destination: "/api/auth/signin",
+            permanent: false,
+          },
+        };
+      }
     },
   });
 
   const [folders, setFolders] = useState([] as Folders[] | null);
   const [notes, setNotes] = useState([] as Notes[] | null);
-  const [parents, setParents] = useState([] as Folders[] | null);
 
   const { data, isLoading, isError } = api.users.getUser.useQuery({
     id: session?.user.id as string,

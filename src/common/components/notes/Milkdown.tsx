@@ -5,7 +5,7 @@ import { collab, collabServiceCtx } from "@milkdown/plugin-collab";
 import { Doc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { prism, prismConfig } from "@milkdown/plugin-prism";
-import { indent, indentConfig } from "@milkdown/plugin-indent";
+import { indent, indentConfig, type IndentConfigOptions } from "@milkdown/plugin-indent";
 import { nord } from "@milkdown/theme-nord";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
@@ -55,10 +55,10 @@ export default function MilkdownEditor({
             refractor.register(python);
           },
         });
-        // ctx.set(indentConfig.key, {
-        //   type: 'tab',
-        //   size: 4,
-        // });
+        ctx.set(indentConfig.key, {
+          type: 'tab',
+          size: 4,
+        } as IndentConfigOptions);
       })
       .use(commonmark)
       .use(collab)

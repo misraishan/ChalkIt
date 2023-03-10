@@ -32,8 +32,7 @@ export default function NotesEditor() {
           ? setHasWrite(true)
           : setHasWrite(false);
       } else if (note?.fullRead) setHasWrite(false);
-
-      if (!hasWrite && !note?.fullRead) {
+      else {
         void router.push("/");
       }
     }
@@ -57,34 +56,51 @@ export default function NotesEditor() {
   return (
     <>
       <Head>
-        <title>{note?.name || "Untitled"} - Notes</title>
-        <meta
-          name="description"
-          content={`${note?.name} created on Chalkit.io`}
-        />
+        <title>New Note</title>
+        <meta name="description" content={`Created on Chalkit.io`} />
       </Head>
-      <Layout>
-        {note ? (
-          <div className="h-screen">
-            {note?.name && (
-              <NameField name={note.name} id={noteId} hasWrite={hasWrite} />
-            )}
-            <EditorWindow
-              editable={hasWrite}
-              noteId={noteId}
-              updateToast={updateToast}
-              userName={user?.name || "Anonymous"}
-            />
-          </div>
-        ) : (
-          <Loading />
-        )}
-        {toast.show && (
-          <Toast vertical="bottom" horizontal="end">
-            <Alert status={toast.type}>{toast.message}</Alert>
-          </Toast>
-        )}
-      </Layout>
+      {user ? (
+        <Layout>
+          {note ? (
+            <div className="h-screen">
+              {note?.name && (
+                <NameField name={note.name} id={noteId} hasWrite={hasWrite} />
+              )}
+              <EditorWindow
+                editable={hasWrite}
+                noteId={noteId}
+                updateToast={updateToast}
+                userName={user?.name || "Anonymous"}
+              />
+            </div>
+          ) : (
+            <Loading />
+          )}
+          {toast.show && (
+            <Toast vertical="bottom" horizontal="end">
+              <Alert status={toast.type}>{toast.message}</Alert>
+            </Toast>
+          )}
+        </Layout>
+      ) : (
+        <>
+          {note ? (
+            <div className="h-screen">
+              {note?.name && (
+                <NameField name={note.name} id={noteId} hasWrite={hasWrite} />
+              )}
+              <EditorWindow
+                editable={hasWrite}
+                noteId={noteId}
+                updateToast={updateToast}
+                userName={"Anonymous"}
+              />
+            </div>
+          ) : (
+            <Loading />
+          )}
+        </>
+      )}
     </>
   );
 }
