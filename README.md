@@ -1,4 +1,4 @@
-# Create T3 App
+# Chalkit
 
 The Markdown editor for the Modern Web.
 
@@ -23,6 +23,6 @@ This project uses the [T3 stack](https://create.t3.gg/), which is a collection o
 
 ## Deployment
 
-For the MySQL side (authentication, folders, sessions, etc), we're using [Planetscale](https://planetscale.com) for the database. [Upstash](https://upstash.com) is used for quick document store from [TipTap](https://tiptap.dev).
+For the MySQL side (authentication, folders, sessions, etc), we're using [Planetscale](https://planetscale.com) for the database. [Upstash](https://upstash.com) is used for quick document store from [Milkdown](https://milkdown.dev). Milkdown is based on Prosemirror to allow for collaborative editing and extensible markup.
 
-The NextJS website will be deployed through [Vercel](https://vercel.com), at the domain https://chalkit.io.
+The NextJS website will be deployed through [Vercel](https://vercel.com), at the domain https://chalkit.io. It is currently in beta at https://beta.chalkit.io.
