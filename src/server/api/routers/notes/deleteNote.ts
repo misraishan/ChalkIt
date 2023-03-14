@@ -22,8 +22,10 @@ export default function deleteNote() {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
-      await ctx.prisma.notes.delete({
+      const deletedNote = await ctx.prisma.notes.delete({
         where: { id: input.id },
       });
+
+      return deletedNote;
     });
 }
