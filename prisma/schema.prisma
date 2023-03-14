@@ -53,6 +53,7 @@ model User {
   folders       Folders[]
   notes         Notes[]
   shared        Shared[]
+  favorites     Notes[]  @relation("Favorites")
 }
 
 model Folders {
@@ -80,6 +81,8 @@ model Notes {
   shared    Shared[]
   fullRead  Boolean  @default(false)
   fullWrite Boolean  @default(false)
+  content   String?  @db.Text
+  favorite  User[]   @relation("Favorites")
 
   @@index([folderId])
   @@index([userId])
