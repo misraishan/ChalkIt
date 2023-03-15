@@ -45,9 +45,9 @@ module.exports = {
       {
         dark: {
           primary: "#88C0D0",
-          "primary-focus": "#81A1C1",
+          "primary-focus": "#60a5fa",
           "primary-content": "#ECEFF4",
-          secondary: "#5E81AC",
+          secondary: "#c084fc",
           "secondary-focus": "#BF616A",
           "secondary-content": "#2E3440",
           accent: "#8FBCBB",
@@ -63,7 +63,7 @@ module.exports = {
           info: "#88C0D0",
           success: "#A3BE8C",
           warning: "#EBCB8B",
-          error: "#BF616A",
+          error: "#f43f5e",
         },
       },
     ],
