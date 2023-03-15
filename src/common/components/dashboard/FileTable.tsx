@@ -61,7 +61,6 @@ export default function FileTable({
 }) {
   const router = useRouter();
 
-  console.log(notesData, folderData);
   useEffect(() => {
     setNotesData(notesData);
     setFolderData(folderData);
@@ -75,8 +74,15 @@ export default function FileTable({
   } | null>(null);
 
   const memoizedData = useMemo(
-    () => createColumnData({ folders: folderData, notes: notesData }),
-    [folderData, notesData]
+    () => {
+      const columnData = createColumnData({ folders: folderData, notes: notesData });
+      for (const column of columnData) {
+        if (column.type === ColumnType.Folder) void router.prefetch(`/home/${column.id}`);
+      }
+
+      return columnData;
+    },
+    [folderData, notesData, router]
   );
 
   const table = useReactTable<ColumnRow>({
@@ -109,8 +115,8 @@ export default function FileTable({
   const deleteFolder = api.folders.deleteFolder.useMutation();
 
   return (
-    <div className="flex table h-full w-full flex-col overflow-x-hidden overflow-y-scroll">
-      <table className="h-[50rem] w-full">
+    <div className="flex table w-full flex-col overflow-x-hidden overflow-y-scroll">
+      <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -132,10 +138,10 @@ export default function FileTable({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:base-100 cursor-pointer hover:from-transparent"
+              className="hover:base-100 cursor-pointer hover:from-transparent h-36"
               onClick={() => {
                 if (row.original.type === ColumnType.Note) {
-                  void router.push(`/notes/${row.original.id}`);
+                  void router.push(`/notes/${row.original.id}` );
                 } else {
                   void router.push(`/home/${row.original.id}`);
                 }
