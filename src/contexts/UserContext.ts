@@ -12,4 +12,9 @@ export default createContext({
     console.log("setNotes", notes);
     return;
   },
+  userId: null as string | null | undefined,
+  setUserId: (userId: string | null | undefined) => {
+    console.log("setUserId", userId);
+    return;
+  }
 });

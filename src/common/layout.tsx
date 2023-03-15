@@ -112,14 +112,24 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     updateToast("Creating...", ToastType.Info);
   };
 
+
+  const [userId, setUserId] = useState(null as string | null | undefined);
+  useMemo(() => {
+    if (user) {
+      setUserId(user.userId);
+    }
+  }, [user]);
+
   const values = useMemo(
     () => ({
       folders,
       setFolders,
       notes,
       setNotes,
+      userId,
+      setUserId,
     }),
-    [folders, notes]
+    [folders, notes, userId]
   );
 
   const MemoizedFileSystem = memo(SideFileSystem);
@@ -131,7 +141,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {session && notes && folders && user && (
           <>
             <MemoizedFileSystem
-              user={user}
               session={session}
               handleNewFolder={(name, parentId) => handleCreateFolder(name, parentId)}
               handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
