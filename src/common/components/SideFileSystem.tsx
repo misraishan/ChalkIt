@@ -1,9 +1,13 @@
 import Image from "next/image";
 import { type Shared, type Folders, type Notes } from "@prisma/client";
 import { type Session } from "next-auth";
-import { useState } from "react";
-import { Button, Dropdown, Modal } from "react-daisyui";
-import { HiFolderAdd, HiDocumentAdd } from "react-icons/hi";
+import { useCallback, useState } from "react";
+import { Button, Collapse, Modal } from "react-daisyui";
+import {
+  HiOutlineFolderAdd,
+  HiOutlineDocumentAdd,
+  HiOutlineHome,
+} from "react-icons/hi";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
@@ -38,15 +42,46 @@ export default function SideFileSystem({
   const [visible, setVisible] = useState(false);
   const [newType, setType] = useState("" as NewType);
 
-  const toggleVisible = ({ type }: { type: NewType }) => {
-    if (type === NewType.null) {
+  const toggleVisible = useCallback(
+    ({ type }: { type: NewType }) => {
+      if (type === NewType.null) {
+        setVisible(!visible);
+        setType(type);
+        return;
+      }
       setVisible(!visible);
       setType(type);
-      return;
+    },
+    [visible]
+  );
+
+  const createNew = useCallback(() => {
+    if (newType === NewType.folder) {
+      const parentId =
+        router.query.folderId && (router.query.folderId[0] as string | null);
+      if (parentId !== "home" && parentId !== undefined) {
+        handleNewFolder(name, parentId);
+      } else {
+        handleNewFolder(name, null);
+      }
+    } else if (newType === NewType.note) {
+      const folderId =
+        router.query.folderId && (router.query.folderId[0] as string | null);
+      if (folderId !== "home" && folderId !== undefined) {
+        handleNewNote(name, folderId);
+      } else {
+        handleNewNote(name, null);
+      }
     }
-    setVisible(!visible);
-    setType(type);
-  };
+    toggleVisible({ type: NewType.null });
+  }, [
+    handleNewFolder,
+    handleNewNote,
+    name,
+    newType,
+    router.query.folderId,
+    toggleVisible,
+  ]);
 
   return (
     <div className="w-1/5">
@@ -68,29 +103,68 @@ export default function SideFileSystem({
         </div>
 
         <div className="flex flex-row justify-center children:mx-2">
-          <Link href={"/home"}>
-            <Button color="accent">Home</Button>
+          <Link href={"/home"} className="mx-2">
+            <Button
+              color="ghost"
+              className="border-purple-400 hover:bg-purple-400 hover:text-white"
+            >
+              <HiOutlineHome size={24} />
+            </Button>
           </Link>
-          <Dropdown hover horizontal="center">
-            <Dropdown.Toggle color="secondary">New +</Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item
-                onClick={() => toggleVisible({ type: NewType.folder })}
-              >
-                <HiFolderAdd size={24} />
-                Folder
-              </Dropdown.Item>
-              <Dropdown.Item
-                onClick={() => toggleVisible({ type: NewType.note })}
-              >
-                <HiDocumentAdd size={24} />
-                Note
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          <Button
+            color="ghost"
+            onClick={() => toggleVisible({ type: NewType.note })}
+            className="mx-2 border border-purple-400 hover:bg-purple-400 hover:text-white"
+          >
+            <HiOutlineDocumentAdd size={24} />
+          </Button>
+          <Button
+            color="ghost"
+            onClick={() => toggleVisible({ type: NewType.folder })}
+            className="mx-2 border border-purple-400 hover:bg-purple-400 hover:text-white"
+          >
+            <HiOutlineFolderAdd size={24} />
+          </Button>
+        </div>
+        <div className="flex flex-row justify-center children:m-2">
+          <Link href={"/shared"}>
+            <Button
+              color="ghost"
+              className="border-blue-400 hover:bg-blue-400 hover:text-white"
+            >
+              Shared
+            </Button>
+          </Link>
+          <Link href={"/favorites"}>
+            <Button
+              color="ghost"
+              className="border-blue-400 hover:bg-blue-400 hover:text-white"
+            >
+              Favorites
+            </Button>
+          </Link>
         </div>
 
-        <Modal
+        <div className="flex flex-col justify-center">
+          <Collapse tabIndex={1} className="text-center">
+            <Collapse.Title className="btn-ghost btn">Shared</Collapse.Title>
+            <Collapse.Content>
+              {user?.shared.map((share) => (
+                <div key={share.id}>
+                  <Link href={`/notes/${share?.noteId}`}>
+                    <a className="text-lg">{"Shared note"}</a>
+                  </Link>
+                </div>
+              ))}
+              <div>Test</div>
+              <div>Test</div>
+              <div>Test</div>
+            </Collapse.Content>
+          </Collapse>
+        </div>
+      </div>
+
+      <Modal
           open={visible}
           onClickBackdrop={() =>
             toggleVisible({
@@ -114,39 +188,11 @@ export default function SideFileSystem({
             </div>
           </Modal.Body>
           <Modal.Actions>
-            <button
-              className="btn-primary btn"
-              onClick={() => {
-                console.log(name, newType);
-                if (newType === NewType.folder) {
-                  const parentId =
-                    router.query.folderId &&
-                    (router.query.folderId[0] as string | null);
-                  if (parentId !== "home" && parentId !== undefined) {
-                    handleNewFolder(name, parentId);
-                  } else {
-                    handleNewFolder(name, null);
-                  }
-                } else if (newType === NewType.note) {
-                  const folderId =
-                    router.query.folderId &&
-                    (router.query.folderId[0] as string | null);
-                  if (folderId !== "home" && folderId !== undefined) {
-                    handleNewNote(name, folderId);
-                  } else {
-                    handleNewNote(name, null);
-                  }
-                }
-                toggleVisible({ type: NewType.null });
-              }}
-            >
+            <button className="btn-primary btn" onClick={() => createNew()}>
               Create
             </button>
           </Modal.Actions>
         </Modal>
-
-        <div className="flex flex-col gap-4 overflow-auto p-4"></div>
-      </div>
     </div>
   );
 }
