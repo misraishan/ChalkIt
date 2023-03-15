@@ -26,7 +26,6 @@ export default function NameField({
   return (
     <Input
       className="mx-4 bg-black text-4xl text-base-content"
-      defaultValue={name || "Untitled"}
       value={newName}
       maxLength={50}
       minLength={1}
