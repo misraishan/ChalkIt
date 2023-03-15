@@ -1,8 +1,7 @@
 import Image from "next/image";
-import { type Shared, type Folders, type Notes } from "@prisma/client";
 import { type Session } from "next-auth";
-import { useCallback, useState } from "react";
-import { Button, Collapse, Modal } from "react-daisyui";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { Button, Modal } from "react-daisyui";
 import {
   HiOutlineFolderAdd,
   HiOutlineDocumentAdd,
@@ -10,6 +9,9 @@ import {
 } from "react-icons/hi";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { buildFileTree, type TreeNode } from "../helpers/buildFileTree";
+import FileTree from "./FileTree";
+import UserContext from "~/contexts/UserContext";
 
 enum NewType {
   folder = "folder",
@@ -18,21 +20,10 @@ enum NewType {
 }
 
 export default function SideFileSystem({
-  user,
   session,
   handleNewNote,
   handleNewFolder,
 }: {
-  user:
-    | {
-        notes: Notes[];
-        folders: Folders[];
-        shared: Shared[];
-        userId: string | null;
-        name: string | null;
-      }
-    | null
-    | undefined;
   session: Session;
   handleNewNote: (name: string, folderId: string | null) => void;
   handleNewFolder: (name: string, parentId: string | null) => void;
@@ -41,6 +32,7 @@ export default function SideFileSystem({
   const [name, setName] = useState("");
   const [visible, setVisible] = useState(false);
   const [newType, setType] = useState("" as NewType);
+  const user = useContext(UserContext);
 
   const toggleVisible = useCallback(
     ({ type }: { type: NewType }) => {
@@ -83,6 +75,29 @@ export default function SideFileSystem({
     toggleVisible,
   ]);
 
+  const [flatList, setFlatList] = useState<TreeNode[]>([]);
+  useMemo(() => {
+    if (user) {
+      const flatList = user.folders?.map((folder) => ({
+        id: folder.id,
+        name: folder.name,
+        parentId: folder.parentId,
+        type: "folder",
+        children: null,
+      }));
+      const notes = user.notes?.map((note) => ({
+        id: note.id,
+        name: note.name,
+        parentId: note.folderId,
+        type: "note",
+        children: null,
+      }));
+      setFlatList([...(flatList || []), ...(notes || [])]);
+    }
+  }, [user]);
+
+  const tree = buildFileTree(flatList);
+
   return (
     <div className="w-1/5">
       <div className="flex h-screen flex-col">
@@ -98,7 +113,7 @@ export default function SideFileSystem({
             </div>
           </div>
           <div className="mx-2 justify-start text-start text-xl">
-            {user?.userId}
+            {user.userId}
           </div>
         </div>
 
@@ -145,54 +160,41 @@ export default function SideFileSystem({
           </Link>
         </div>
 
-        <div className="flex flex-col justify-center">
-          <Collapse tabIndex={1} className="text-center">
-            <Collapse.Title className="btn-ghost btn">Shared</Collapse.Title>
-            <Collapse.Content>
-              {user?.shared.map((share) => (
-                <div key={share.id}>
-                  <Link href={`/notes/${share?.noteId}`}>
-                    <a className="text-lg">{"Shared note"}</a>
-                  </Link>
-                </div>
-              ))}
-              <div>Test</div>
-              <div>Test</div>
-              <div>Test</div>
-            </Collapse.Content>
-          </Collapse>
+        <h2 className="ml-2 text-2xl">All Files</h2>
+        <div className="justify-center overflow-x-auto overflow-y-auto">
+          {tree && <FileTree fileTree={tree} />}
         </div>
       </div>
 
       <Modal
-          open={visible}
-          onClickBackdrop={() =>
-            toggleVisible({
-              type: NewType.null,
-            })
-          }
-        >
-          <Modal.Header>Create {newType}</Modal.Header>
-          <Modal.Body>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">Name</span>
-              </label>
-              <input
-                type="text"
-                placeholder={`Name of ${newType}`}
-                className="input-bordered input"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          </Modal.Body>
-          <Modal.Actions>
-            <button className="btn-primary btn" onClick={() => createNew()}>
-              Create
-            </button>
-          </Modal.Actions>
-        </Modal>
+        open={visible}
+        onClickBackdrop={() =>
+          toggleVisible({
+            type: NewType.null,
+          })
+        }
+      >
+        <Modal.Header>Create {newType}</Modal.Header>
+        <Modal.Body>
+          <div className="form-control">
+            <label className="label">
+              <span className="label-text">Name</span>
+            </label>
+            <input
+              type="text"
+              placeholder={`Name of ${newType}`}
+              className="input-bordered input"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+        </Modal.Body>
+        <Modal.Actions>
+          <button className="btn-primary btn" onClick={() => createNew()}>
+            Create
+          </button>
+        </Modal.Actions>
+      </Modal>
     </div>
   );
 }
