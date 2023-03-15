@@ -2,11 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { type Notes, type Folders } from "@prisma/client";
 import { api } from "~/utils/api";
-import { HiOutlineTrash, HiOutlineShare } from "react-icons/hi";
+import {
+  HiOutlineTrash,
+  HiOutlineShare,
+  HiOutlineArrowSmDown,
+  HiOutlineArrowSmUp,
+} from "react-icons/hi";
 import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { Modal } from "react-daisyui";
@@ -72,23 +79,27 @@ export default function FileTable({
     type: "folder" | "note";
     name: string;
   } | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
 
-  const memoizedData = useMemo(
-    () => {
-      const columnData = createColumnData({ folders: folderData, notes: notesData });
-      for (const column of columnData) {
-        if (column.type === ColumnType.Folder) void router.prefetch(`/home/${column.id}`);
-      }
+  const memoizedData = useMemo(() => {
+    const columnData = createColumnData({
+      folders: folderData,
+      notes: notesData,
+    });
+    for (const column of columnData) {
+      if (column.type === ColumnType.Folder)
+        void router.prefetch(`/home/${column.id}`);
+    }
 
-      return columnData;
-    },
-    [folderData, notesData, router]
-  );
+    return columnData;
+  }, [folderData, notesData, router]);
 
   const table = useReactTable<ColumnRow>({
     columns,
     data: memoizedData,
     getRowId: (row) => row.id,
+    onSortingChange: setSorting,
+    getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
   });
 
@@ -98,14 +109,9 @@ export default function FileTable({
       columnVisibility: {
         id: false,
       },
-      sorting: [
-        {
-          id: "updatedAt",
-          desc: true,
-        },
-      ],
+      sorting: sorting,
     });
-  }, [table]);
+  }, [sorting, table]);
 
   useEffect(() => {
     void router.prefetch("/notes/new");
@@ -121,13 +127,35 @@ export default function FileTable({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
+                <th key={header.id} className={
+                  header.column.getIsSorted() ? "bg-base-100 outline outline-purple-400 outline-" : ""
+                }
+                onClick={header.column.getToggleSortingHandler()}>
+                  {header.isPlaceholder ? null : (
+                    <div
+                      className={`flex flex-row items-center ${
+                        header.column.getIsSorted() ? "font-extrabold" : ""
+                      } ${
+                        header.column.getCanSort()
+                          ? "cursor-pointer"
+                          : "cursor-not-allowed"
+                      }`}
+                    >
+                      {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                      {{
+                        asc: (
+                          <HiOutlineArrowSmUp
+                            size={20}
+                            className={"flex flex-row"}
+                          />
+                        ),
+                        desc: <HiOutlineArrowSmDown size={20} />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
                 </th>
               ))}
               <th>Actions</th>
@@ -138,10 +166,10 @@ export default function FileTable({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:base-100 cursor-pointer hover:from-transparent h-36"
+              className="hover:base-100 h-36 cursor-pointer hover:from-transparent"
               onClick={() => {
                 if (row.original.type === ColumnType.Note) {
-                  void router.push(`/notes/${row.original.id}` );
+                  void router.push(`/notes/${row.original.id}`);
                 } else {
                   void router.push(`/home/${row.original.id}`);
                 }
