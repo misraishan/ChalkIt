@@ -1,47 +1,61 @@
 import Head from "next/head";
 import FileTable from "../../common/components/dashboard/FileTable";
-import Layout from "../../common/layout";
 import { api } from "~/utils/api";
 import { useRouter } from "next/router";
 import Loading from "../../common/components/handlerComponents/Loading";
 import Error from "../../common/components/handlerComponents/Error";
+import { useContext, useMemo, useState } from "react";
+import { type Folders, type Notes } from "@prisma/client";
+import UserContext from "~/contexts/UserContext";
 
 export default function FolderId() {
   const router = useRouter();
-  const {
-    data: folder,
-    isLoading,
-    isError,
-  } = router.query?.folderId
-    ? api.folders.getFolder.useQuery({
-        id: router.query?.folderId[router.query.folderId.length - 1] as string,
-      })
-    : {
-        data: null,
-        isLoading: false,
-        isError: false,
-      };
+  const folderId =
+    router.query.folderId && (router.query.folderId[0] as string);
+
+  const user = useContext(UserContext);
+  const { notes, folders } = user;
+
+  const [folderData, setFolderData] = useState(
+    null as Folders[] | null | undefined
+  );
+  const [notesData, setNotesData] = useState(
+    null as Notes[] | null | undefined
+  );
+
+  const { data, isLoading, isError } = api.folders.getFolder.useQuery({
+    id: folderId as string,
+  });
+
+  useMemo(() => {
+    if (user) {
+      setFolderData(folders?.filter((folder) => folder.parentId === folderId));
+      setNotesData(notes?.filter((note) => note.folderId === folderId));
+    } else {
+      setFolderData(null);
+      setNotesData(null);
+    }
+  }, [folderId, folders, notes, user]);
 
   return (
     <>
       <Head>
-        <title>
-          {folder ? folder.name : "Loading..."}
-        </title>
+        <title>{data ? data.name : "Loading..."}</title>
       </Head>
-      <Layout>
-        {isLoading && <Loading />}
-        {isError && <Error />}
+      {isLoading && <Loading />}
+      {isError && <Error />}
 
-        {folder && (
-          <>
-            <h1 className="m-2 text-4xl font-bold text-secondary">
-              {folder.name}
-            </h1>
-            <FileTable folder={folder} />
-          </>
-        )}
-      </Layout>
+      {data && (
+        <>
+          <h1 className="m-2 text-4xl font-bold text-secondary">{data.name}</h1>
+          <FileTable
+            folderData={folderData}
+            notesData={notesData}
+            setFolderData={setFolderData}
+            setNotesData={setNotesData}
+          />
+        </>
+      )}
     </>
   );
 }

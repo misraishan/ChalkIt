@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../../common/components/handlerComponents/Loading";
-import Layout, { ToastType } from "../../common/layout";
+import { ToastType } from "../../common/layout";
 import EditorWindow from "../../common/components/notes/EditorWindow";
 import NameField from "../../common/components/notes/NameField";
 import Head from "next/head";
@@ -60,7 +60,7 @@ export default function NotesEditor() {
         <meta name="description" content={`Created on Chalkit.io`} />
       </Head>
       {user ? (
-        <Layout>
+        <>
           {note ? (
             <div className="h-screen">
               {note?.name && (
@@ -81,7 +81,7 @@ export default function NotesEditor() {
               <Alert status={toast.type}>{toast.message}</Alert>
             </Toast>
           )}
-        </Layout>
+        </>
       ) : (
         <>
           {note ? (

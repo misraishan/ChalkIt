@@ -1,16 +1,11 @@
 import Image from "next/image";
 import { type Shared, type Folders, type Notes } from "@prisma/client";
 import { type Session } from "next-auth";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Button, Dropdown, Modal } from "react-daisyui";
-import {
-  HiFolderOpen,
-  HiDocumentText,
-  HiFolderAdd,
-  HiDocumentAdd,
-} from "react-icons/hi";
+import { HiFolderAdd, HiDocumentAdd } from "react-icons/hi";
 import Link from "next/link";
-import UserContext from "../../contexts/UserContext";
+import { useRouter } from "next/router";
 
 enum NewType {
   folder = "folder",
@@ -35,23 +30,22 @@ export default function SideFileSystem({
     | null
     | undefined;
   session: Session;
-  handleNewNote: (name: string) => void;
-  handleNewFolder: (name: string) => void;
+  handleNewNote: (name: string, folderId: string | null) => void;
+  handleNewFolder: (name: string, parentId: string | null) => void;
 }) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [visible, setVisible] = useState(false);
   const [newType, setType] = useState("" as NewType);
 
-  const { folders, notes } = useContext(UserContext);
-
   const toggleVisible = ({ type }: { type: NewType }) => {
     if (type === NewType.null) {
-      setType(type);
       setVisible(!visible);
+      setType(type);
       return;
     }
-    setType(type);
     setVisible(!visible);
+    setType(type);
   };
 
   return (
@@ -68,7 +62,9 @@ export default function SideFileSystem({
               />
             </div>
           </div>
-          <div className="justify-start text-start text-xl mx-2">{user?.userId}</div>
+          <div className="mx-2 justify-start text-start text-xl">
+            {user?.userId}
+          </div>
         </div>
 
         <div className="flex flex-row justify-center children:mx-2">
@@ -94,8 +90,15 @@ export default function SideFileSystem({
           </Dropdown>
         </div>
 
-        <Modal open={visible}>
-          <Modal.Header>Create Folder</Modal.Header>
+        <Modal
+          open={visible}
+          onClickBackdrop={() =>
+            toggleVisible({
+              type: NewType.null,
+            })
+          }
+        >
+          <Modal.Header>Create {newType}</Modal.Header>
           <Modal.Body>
             <div className="form-control">
               <label className="label">
@@ -103,7 +106,7 @@ export default function SideFileSystem({
               </label>
               <input
                 type="text"
-                placeholder="Folder Name"
+                placeholder={`Name of ${newType}`}
                 className="input-bordered input"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -116,9 +119,23 @@ export default function SideFileSystem({
               onClick={() => {
                 console.log(name, newType);
                 if (newType === NewType.folder) {
-                  handleNewFolder(name);
+                  const parentId =
+                    router.query.folderId &&
+                    (router.query.folderId[0] as string | null);
+                  if (parentId !== "home" && parentId !== undefined) {
+                    handleNewFolder(name, parentId);
+                  } else {
+                    handleNewFolder(name, null);
+                  }
                 } else if (newType === NewType.note) {
-                  handleNewNote(name);
+                  const folderId =
+                    router.query.folderId &&
+                    (router.query.folderId[0] as string | null);
+                  if (folderId !== "home" && folderId !== undefined) {
+                    handleNewNote(name, folderId);
+                  } else {
+                    handleNewNote(name, null);
+                  }
                 }
                 toggleVisible({ type: NewType.null });
               }}
@@ -128,39 +145,7 @@ export default function SideFileSystem({
           </Modal.Actions>
         </Modal>
 
-        <div className="flex flex-col gap-4 p-4 overflow-auto">
-          {folders &&
-            folders.map(
-              (folder: Folders) =>
-                folder.parentId === null && (
-                  <div
-                    className="flex flex-row items-center gap-4"
-                    key={folder.id}
-                  >
-                    <HiFolderOpen size={24} />
-                    {folder.name}
-                    {/* {folder.parentId === parentId && (
-                    <div className="flex flex-col gap-4">
-                      {}
-                  )} */}
-                  </div>
-                )
-            )}
-          {notes &&
-            notes.map((note: Notes) => {
-              if (note.folderId === null) {
-                return (
-                  <div
-                    className="flex flex-row items-center gap-4"
-                    key={note.id}
-                  >
-                    <HiDocumentText size={24} />
-                    {note.name}
-                  </div>
-                );
-              }
-            })}
-        </div>
+        <div className="flex flex-col gap-4 overflow-auto p-4"></div>
       </div>
     </div>
   );

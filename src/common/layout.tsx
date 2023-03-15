@@ -1,6 +1,6 @@
 import { type Folders, type Notes } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { api } from "~/utils/api";
 import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "../contexts/UserContext";
@@ -36,8 +36,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     },
   });
 
-  const [folders, setFolders] = useState([] as Folders[] | null);
-  const [notes, setNotes] = useState([] as Notes[] | null);
+  const [folders, setFolders] = useState(null as Folders[] | null | undefined);
+  const [notes, setNotes] = useState(null as Notes[] | null | undefined);
 
   const { data, isLoading, isError } = api.users.getUser.useQuery({
     id: session?.user.id as string,
@@ -71,65 +71,58 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     }, 3000);
   };
 
-  const handleCreateFolder = (name: string) => {
-    const parentId = router.query.folderId
-      ? router.query.folderId[router.query.folderId.length - 1]
-      : null;
+  const handleCreateFolder = (name: string, parentId: string | null) => {
     void newFolder
       .mutateAsync({
-        name: name,
+        name,
         parentId,
       })
       .then((res) => {
         if (res) {
-          // TODO: Work on this section
-          // Not properly updating in sub folders yet...
-          if (res.parentId === null) {
-            setFolders((prev) => {
-              if (prev) {
-                return [...prev, res];
-              }
-              return null;
-            });
-          }
           updateToast("Folder created", ToastType.Success);
+          setFolders((prev) => {
+            if (prev) {
+              return [...prev, res];
+            }
+            return null;
+          });
         }
       });
     updateToast("Creating folder...", ToastType.Info);
   };
 
-  const handleCreateNote = (name: string) => {
-    const folderId = router.query.folderId
-      ? router.query.folderId[router.query.folderId.length - 1]
-      : null;
+  const handleCreateNote = (name: string, folderId: string | null) => {
     void newNote
       .mutateAsync({
-        name: name,
+        name,
         folderId,
       })
       .then((res) => {
         if (res) {
-          if (res.folderId === null) {
-            setNotes((prev) => {
-              if (prev) {
-                return [...prev, res];
-              }
-              return null;
-            });
-          }
           updateToast("Note created", ToastType.Success);
+          setNotes((prev) => {
+            if (prev) {
+              return [...prev, res];
+            }
+            return null;
+          })
         }
       });
 
     updateToast("Creating...", ToastType.Info);
   };
 
-  const values = {
-    folders,
-    setFolders,
-    notes,
-    setNotes,
-  };
+  const values = useMemo(
+    () => ({
+      folders,
+      setFolders,
+      notes,
+      setNotes,
+    }),
+    [folders, notes]
+  );
+
+  const MemoizedFileSystem = memo(SideFileSystem);
 
   return (
     <UserContext.Provider value={values}>
@@ -137,11 +130,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen flex-row">
         {session && notes && folders && user && (
           <>
-            <SideFileSystem
+            <MemoizedFileSystem
               user={user}
               session={session}
-              handleNewFolder={(name) => handleCreateFolder(name)}
-              handleNewNote={(name) => handleCreateNote(name)}
+              handleNewFolder={(name, parentId) => handleCreateFolder(name, parentId)}
+              handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
             />
             <div className="w-0.5 bg-accent"></div>
           </>
