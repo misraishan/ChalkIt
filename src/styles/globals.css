@@ -17,4 +17,32 @@
 .milkdown .editor h2 {
     @apply my-4 text-3xl font-bold;
 }
+
+.milkdown .editor h3 {
+    @apply my-4 text-2xl font-bold;
+}
+
+.milkdown .editor h4 {
+    @apply my-4 text-xl font-bold;
+}
+
+.milkdown .editor h5 {
+    @apply my-4 text-lg font-bold;
+}
+
+.milkdown .editor h6 {
+    @apply my-4 text-base font-bold;
+}
+
+.milkdown .editor p {
+    @apply my-0.5;
+}
+
+.milkdown .editor ul {
+    @apply my-0;
+}
+
+.milkdown .editor ol {
+    @apply my-0;
+}
   

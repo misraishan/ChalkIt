@@ -1,12 +1,16 @@
 import { Editor, editorViewOptionsCtx, rootCtx } from "@milkdown/core";
 import { Milkdown, useEditor } from "@milkdown/react";
 import { commonmark } from "@milkdown/preset-commonmark";
+import { gfm } from "@milkdown/preset-gfm";
 import { collab, collabServiceCtx } from "@milkdown/plugin-collab";
 import { Doc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { prism, prismConfig } from "@milkdown/plugin-prism";
 import { indent, indentConfig, type IndentConfigOptions } from "@milkdown/plugin-indent";
 import { nord } from "@milkdown/theme-nord";
+import { cursor } from "@milkdown/plugin-cursor";
+import { clipboard } from "@milkdown/plugin-clipboard";
+import { history } from "@milkdown/plugin-history";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
@@ -61,9 +65,13 @@ export default function MilkdownEditor({
         } as IndentConfigOptions);
       })
       .use(commonmark)
+      .use(gfm)
       .use(collab)
       .use(prism)
-      .use(indent);
+      .use(indent)
+      .use(cursor)
+      .use(history)
+      .use(clipboard);
   }, []);
 
   const doc: Doc = new Doc();
