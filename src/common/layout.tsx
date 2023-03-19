@@ -6,7 +6,6 @@ import SideFileSystem from "./components/SideFileSystem";
 import UserContext from "../contexts/UserContext";
 import { useRouter } from "next/router";
 import { Alert, Toast } from "react-daisyui";
-import Loading from "./components/handlerComponents/Loading";
 
 export enum ToastType {
   Info = "info",
@@ -22,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     message: "",
     type: ToastType.Info || undefined,
   });
-  const { data: session } = useSession({
+  const { data: session, status } = useSession({
     required: true,
     onUnauthenticated() {
       if (!router.pathname.includes("/notes/")) {
@@ -39,7 +38,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [folders, setFolders] = useState(null as Folders[] | null | undefined);
   const [notes, setNotes] = useState(null as Notes[] | null | undefined);
 
-  const { data, isLoading, isError } = api.users.getUser.useQuery({
+  const { data } = api.users.getUser.useQuery({
     id: session?.user.id as string,
   });
 
@@ -105,13 +104,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               return [...prev, res];
             }
             return null;
-          })
+          });
         }
       });
 
     updateToast("Creating...", ToastType.Info);
   };
-
 
   const [userId, setUserId] = useState(null as string | null | undefined);
   useMemo(() => {
@@ -135,28 +133,39 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const MemoizedFileSystem = memo(SideFileSystem);
 
   return (
-    <UserContext.Provider value={values}>
-      {isLoading || (isError && <Loading />)}
-      <div className="flex h-screen flex-row">
-        {session && notes && folders && user && (
-          <>
-            <MemoizedFileSystem
-              session={session}
-              handleNewFolder={(name, parentId) => handleCreateFolder(name, parentId)}
-              handleNewNote={(name, folderId) => handleCreateNote(name, folderId)}
-            />
-            <div className="w-0.5 bg-accent"></div>
-          </>
-        )}
-        <div className="w-full overflow-y-auto overflow-x-hidden">
-          {children}
+    status === "authenticated" || session ? (
+      <UserContext.Provider value={values}>
+        <div className="flex h-screen flex-row">
+          {status === "authenticated" &&
+            session &&
+            notes &&
+            folders &&
+            user && (
+              <>
+                <MemoizedFileSystem
+                  session={session}
+                  handleNewFolder={(name, parentId) =>
+                    handleCreateFolder(name, parentId)
+                  }
+                  handleNewNote={(name, folderId) =>
+                    handleCreateNote(name, folderId)
+                  }
+                />
+                <div className="w-0.5 bg-accent"></div>
+              </>
+            )}
+          <div className="w-full overflow-y-auto overflow-x-hidden">
+            {children}
+          </div>
+          {toast.show && (
+            <Toast vertical="bottom" horizontal="end">
+              <Alert status={toast.type}>{toast.message}</Alert>
+            </Toast>
+          )}
         </div>
-        {toast.show && (
-          <Toast vertical="bottom" horizontal="end">
-            <Alert status={toast.type}>{toast.message}</Alert>
-          </Toast>
-        )}
-      </div>
-    </UserContext.Provider>
+      </UserContext.Provider>
+    ) : (
+      <div className="w-full overflow-y-auto overflow-x-hidden">{children}</div>
+    )
   );
 }

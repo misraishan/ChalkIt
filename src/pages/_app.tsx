@@ -19,9 +19,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
     <SessionProvider session={session}>
       <div>
         {router.pathname !== "/" && <NavBar />}
-        <Layout>
+        {router.pathname === "/" || session === null ? (
           <Component {...pageProps} />
-        </Layout>
+        ) : (
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        )}
         <div className="mx-4 h-1/6">
           <FooterBar />
         </div>

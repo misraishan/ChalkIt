@@ -1,7 +1,7 @@
 import { type Shared, type Notes } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../../common/components/handlerComponents/Loading";
@@ -24,7 +24,7 @@ export default function NotesEditor() {
     type: ToastType.Info || undefined,
   });
 
-  useEffect(() => {
+  useMemo(() => {
     if (note) {
       if (note?.fullWrite || note?.userId === user?.id) setHasWrite(true);
       else if (note.shared.length > 0) {
@@ -36,7 +36,7 @@ export default function NotesEditor() {
         void router.push("/");
       }
     }
-  }, [hasWrite, note, router, user?.id]);
+  }, [note, router, user?.id]);
 
   const updateToast = (message: string, type: ToastType) => {
     setToast({
