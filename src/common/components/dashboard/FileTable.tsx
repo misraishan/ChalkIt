@@ -17,6 +17,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Modal } from "react-daisyui";
+import ShareSheet from "../shareSheet/ShareSheet";
 
 const timeFormat = (time: Date) => {
   return `${time.toLocaleDateString()} ${
@@ -73,6 +74,8 @@ export default function FileTable({
     setFolderData(folderData);
   }, [setNotesData, notesData, setFolderData, folderData]);
 
+  const [shareSheetOpen, setShareSheetOpen] = useState(false);
+  const [shareSheetData, setShareSheetData] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<{
     id: string;
@@ -127,10 +130,15 @@ export default function FileTable({
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className={
-                  header.column.getIsSorted() ? "bg-base-100 outline outline-purple-400 outline-" : ""
-                }
-                onClick={header.column.getToggleSortingHandler()}>
+                <th
+                  key={header.id}
+                  className={
+                    header.column.getIsSorted()
+                      ? "outline- bg-base-100 outline outline-purple-400"
+                      : ""
+                  }
+                  onClick={header.column.getToggleSortingHandler()}
+                >
                   {header.isPlaceholder ? null : (
                     <div
                       className={`flex flex-row items-center ${
@@ -182,13 +190,21 @@ export default function FileTable({
               ))}
               <td>
                 <div className="flex flex-row">
-                  <HiOutlineShare
-                    size={28}
-                    className="cursor-pointer text-primary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                    }}
-                  />
+                  {row.original.type === ColumnType.Note ? (
+                    <HiOutlineShare
+                      size={28}
+                      className="cursor-pointer text-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (row.original.type === ColumnType.Note) {
+                          setShareSheetData(row.original.id);
+                          setShareSheetOpen(true);
+                        }
+                      }}
+                    />
+                  ) : (
+                    <span className="w-[28px]"></span>
+                  )}
                   <HiOutlineTrash
                     size={28}
                     className="cursor-pointer text-error"
@@ -211,6 +227,13 @@ export default function FileTable({
           ))}
         </tbody>
       </table>
+      {shareSheetOpen && shareSheetData && (
+        <ShareSheet
+          noteId={shareSheetData}
+          modalOpen={shareSheetOpen}
+          setModalOpen={setShareSheetOpen}
+        />
+      )}
       {modalOpen && modalData && (
         <Modal
           open={modalOpen}

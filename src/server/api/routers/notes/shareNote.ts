@@ -8,11 +8,13 @@ export default function shareNote() {
       z.object({
         id: z.string(),
         userId: z.string(),
+        write: z.boolean().or(z.undefined()),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const note = await ctx.prisma.notes.findUnique({
         where: { id: input.id },
+        include: { user: true },
       });
 
       if (!note) {
@@ -23,10 +25,19 @@ export default function shareNote() {
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
 
+      const user = await ctx.prisma.user.findUnique({
+        where: { userId: input.userId },
+      });
+
+      if (!user) {
+        throw new TRPCError({ code: "NOT_FOUND" });
+      }
+
       await ctx.prisma.shared.create({
         data: {
           noteId: input.id,
-          userId: input.userId,
+          userId: user.id,
+          write: input.write,
         },
       });
     });
