@@ -84,10 +84,7 @@ export default function NotesEditor({
             noteContent ? noteContent.substring(0, 128) : "No content yet :("
           }
         />
-        <meta
-          property="og:image"
-          content={`/api/og?title=${noteName}`}
-        />
+        <meta property="og:image" content={`/api/og?title=${noteName}`} />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta property="twitter:domain" content="chalkit.io" />
@@ -158,11 +155,12 @@ export default function NotesEditor({
 import type { AppRouter } from "~/server/api/root";
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
+const url = `${process.env.NEXT_PUBLIC_URL || "https://chalkit.io"}/api/trpc`;
 
 const client = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: "https://test.chalkit.io/api/trpc",
+      url: url,
     }),
   ],
   transformer: superjson,
