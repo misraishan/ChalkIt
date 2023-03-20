@@ -119,6 +119,11 @@ export default function ShareSheet({
               return;
 
             if (modalData) {
+              // shareNote.mutate({
+              //   id: noteData.id,
+              //   userId: shareUser.id,
+              // });
+
               setModalData({
                 ...modalData,
                 shared: [
@@ -135,6 +140,31 @@ export default function ShareSheet({
                 id: noteData.id,
                 userId: shareUser.id,
               });
+
+              if (shareNote.status === "success") {
+                setModalData({
+                  ...modalData,
+                  shared: [
+                    ...modalData.shared.map((share) =>
+                      share.uid === shareUser.id
+                        ? { ...share, uid: shareNote.variables?.id as string }
+                        : share
+                    ),
+                  ],
+                });
+
+                setShareUser({ id: "", write: false });
+              } else if (shareNote.status === "error") {
+                console.log("nfiowrhgoi");
+                setModalData({
+                  ...modalData,
+                  shared: [
+                    ...modalData.shared.filter(
+                      (share) => share.uid !== shareUser.id
+                    ),
+                  ],
+                });
+              }
             }
             setShareUser({ id: "", write: false });
           }}
