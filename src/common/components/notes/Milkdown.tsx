@@ -6,11 +6,17 @@ import { collab, collabServiceCtx } from "@milkdown/plugin-collab";
 import { Doc } from "yjs";
 import { WebsocketProvider } from "y-websocket";
 import { prism, prismConfig } from "@milkdown/plugin-prism";
-import { indent, indentConfig, type IndentConfigOptions } from "@milkdown/plugin-indent";
+import {
+  indent,
+  indentConfig,
+  type IndentConfigOptions,
+} from "@milkdown/plugin-indent";
 import { nord } from "@milkdown/theme-nord";
 import { cursor } from "@milkdown/plugin-cursor";
 import { clipboard } from "@milkdown/plugin-clipboard";
 import { history } from "@milkdown/plugin-history";
+// import { usePluginViewFactory } from "@prosemirror-adapter/react";
+// import { tooltip, TooltipView } from "./milkdownComponents/Tooltip";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
@@ -35,15 +41,17 @@ export default function MilkdownEditor({
   userName: string;
   editable: boolean;
 }) {
+  // const pluginViewFactory = usePluginViewFactory();
+
   const editor = useEditor((root) => {
     return Editor.make()
       .config(nord)
       .config((ctx) => {
+        ctx.set(rootCtx, root);
         ctx.update(editorViewOptionsCtx, (prev) => ({
           ...prev,
           editable: () => editable,
         }));
-        ctx.set(rootCtx, root);
         ctx.set(prismConfig.key, {
           configureRefractor: (refractor) => {
             refractor.register(markdown);
@@ -59,10 +67,17 @@ export default function MilkdownEditor({
             refractor.register(python);
           },
         });
+
         ctx.set(indentConfig.key, {
-          type: 'tab',
+          type: "tab",
           size: 4,
         } as IndentConfigOptions);
+
+        // ctx.set(tooltip.key, {
+        //   view: pluginViewFactory({
+        //     component: TooltipView,
+        //   }),
+        // });
       })
       .use(commonmark)
       .use(gfm)
@@ -71,6 +86,7 @@ export default function MilkdownEditor({
       .use(indent)
       .use(cursor)
       .use(history)
+      // .use(tooltip)
       .use(clipboard);
   }, []);
 
@@ -78,19 +94,23 @@ export default function MilkdownEditor({
   const wsProvider = new WebsocketProvider(
     "wss://ws.chalkit.io",
     roomName,
-    doc
+    doc,
+    { connect: true }
   );
 
   wsProvider.awareness.setLocalStateField("user", {
     name: userName,
-    color: "#fff000",
+    color: randomColor(),
   });
 
   editor.get()?.action((ctx) => {
     const collabService = ctx.get(collabServiceCtx);
-
-    collabService.bindDoc(wsProvider.doc).connect();
+    collabService.bindDoc(doc).setAwareness(wsProvider.awareness).connect();
   });
 
   return <Milkdown />;
+}
+
+function randomColor() {
+  return "#" + Math.floor(Math.random() * 16777215).toString(16);
 }
