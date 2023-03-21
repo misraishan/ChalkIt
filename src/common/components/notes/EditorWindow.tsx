@@ -2,6 +2,7 @@ import { type ToastType } from "~/common/layout";
 import MilkdownEditor from "./Milkdown";
 import { MilkdownProvider } from "@milkdown/react";
 import { useState, useEffect } from "react";
+import { ProsemirrorAdapterProvider } from "@prosemirror-adapter/react";
 
 export default function EditorWindow({
   noteId,
@@ -21,7 +22,15 @@ export default function EditorWindow({
   return (
     <div className="m-4 h-[93vh] overflow-y-scroll rounded-2xl border-2 border-accent outline-none">
       <MilkdownProvider>
-        {isClient && <MilkdownEditor roomName={noteId} userName={userName} editable={editable} />}
+        <ProsemirrorAdapterProvider>
+          {isClient && (
+            <MilkdownEditor
+              roomName={noteId}
+              userName={userName}
+              editable={editable}
+            />
+          )}
+        </ProsemirrorAdapterProvider>
       </MilkdownProvider>
     </div>
   );

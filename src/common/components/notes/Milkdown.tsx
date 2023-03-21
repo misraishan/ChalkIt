@@ -15,8 +15,8 @@ import { nord } from "@milkdown/theme-nord";
 import { cursor } from "@milkdown/plugin-cursor";
 import { clipboard } from "@milkdown/plugin-clipboard";
 import { history } from "@milkdown/plugin-history";
-// import { usePluginViewFactory } from "@prosemirror-adapter/react";
-// import { tooltip, TooltipView } from "./milkdownComponents/Tooltip";
+import { usePluginViewFactory } from '@prosemirror-adapter/react';
+import { tooltip, TooltipView } from "./milkdownComponents/Tooltip";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
@@ -41,7 +41,7 @@ export default function MilkdownEditor({
   userName: string;
   editable: boolean;
 }) {
-  // const pluginViewFactory = usePluginViewFactory();
+  const pluginViewFactory = usePluginViewFactory();
 
   const editor = useEditor((root) => {
     return Editor.make()
@@ -73,11 +73,11 @@ export default function MilkdownEditor({
           size: 4,
         } as IndentConfigOptions);
 
-        // ctx.set(tooltip.key, {
-        //   view: pluginViewFactory({
-        //     component: TooltipView,
-        //   }),
-        // });
+        ctx.set(tooltip.key, {
+          view: pluginViewFactory({
+            component: TooltipView,
+          }),
+        });
       })
       .use(commonmark)
       .use(gfm)
@@ -86,7 +86,7 @@ export default function MilkdownEditor({
       .use(indent)
       .use(cursor)
       .use(history)
-      // .use(tooltip)
+      .use(tooltip)
       .use(clipboard);
   }, []);
 
