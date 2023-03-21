@@ -49,10 +49,11 @@
 /* This gives the remote user caret. The colors are automatically overwritten*/
 .ProseMirror-yjs-cursor {
     position: relative;
-    border-left: 2px solid black;
+    border-left: 3px solid black;
     padding-left: 0.2em;
 }
-/* This renders the username above the caret */
+
+/* This renders the username above the caret and his hidden until hover */
 .ProseMirror-yjs-cursor > div {
     position: absolute;
     top: -2em;
@@ -63,8 +64,23 @@
     
     border-radius: 0.2em;
     pointer-events: none;
+    @apply invisible text-base;
+}
 
-    @apply text-base;
+.ProseMirror-yjs-cursor:hover > div {
+    position: absolute;
+    top: -2em;
+    left: 0;
+    background: white;
+    border: 1px solid black;
+    padding: 0.2em 0.5em;
+    
+    border-radius: 0.2em;
+    pointer-events: none;
+
+    animation: ease-out 1s;
+    @apply visible text-base;
+
 }
   
   
