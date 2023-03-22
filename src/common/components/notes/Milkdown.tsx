@@ -15,8 +15,9 @@ import { nord } from "@milkdown/theme-nord";
 import { cursor } from "@milkdown/plugin-cursor";
 import { clipboard } from "@milkdown/plugin-clipboard";
 import { history } from "@milkdown/plugin-history";
-import { usePluginViewFactory } from '@prosemirror-adapter/react';
+import { usePluginViewFactory } from "@prosemirror-adapter/react";
 import { tooltip, TooltipView } from "./milkdownComponents/Tooltip";
+import { defaultValueCtx } from "@milkdown/core";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
@@ -31,6 +32,10 @@ import rs from "refractor/lang/rust";
 import java from "refractor/lang/java";
 import kotlin from "refractor/lang/kotlin";
 import python from "refractor/lang/python";
+
+const tryNowValue = `# Welcome to ChalkIt!
+## The markdown editor for the modern web.
+`;
 
 export default function MilkdownEditor({
   roomName,
@@ -52,6 +57,9 @@ export default function MilkdownEditor({
           ...prev,
           editable: () => editable,
         }));
+
+        roomName === "try" && ctx.set(defaultValueCtx, tryNowValue);
+
         ctx.set(prismConfig.key, {
           configureRefractor: (refractor) => {
             refractor.register(markdown);
@@ -90,23 +98,25 @@ export default function MilkdownEditor({
       .use(clipboard);
   }, []);
 
-  const doc: Doc = new Doc();
-  const wsProvider = new WebsocketProvider(
-    "wss://ws.chalkit.io",
-    roomName,
-    doc,
-    { connect: true }
-  );
+  if (roomName !== "try") {
+    const doc: Doc = new Doc();
+    const wsProvider = new WebsocketProvider(
+      "wss://ws.chalkit.io",
+      roomName,
+      doc,
+      { connect: true }
+    );
 
-  wsProvider.awareness.setLocalStateField("user", {
-    name: userName,
-    color: randomColor(),
-  });
+    wsProvider.awareness.setLocalStateField("user", {
+      name: userName,
+      color: randomColor(),
+    });
 
-  editor.get()?.action((ctx) => {
-    const collabService = ctx.get(collabServiceCtx);
-    collabService.bindDoc(doc).setAwareness(wsProvider.awareness).connect();
-  });
+    editor.get()?.action((ctx) => {
+      const collabService = ctx.get(collabServiceCtx);
+      collabService.bindDoc(doc).setAwareness(wsProvider.awareness).connect();
+    });
+  }
 
   return <Milkdown />;
 }

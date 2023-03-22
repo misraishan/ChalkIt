@@ -16,21 +16,21 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   const router = useRouter();
   return (
-    <SessionProvider session={session}>
-      <div>
-        {router.pathname !== "/" && <NavBar />}
-        {router.pathname === "/" || session === null ? (
-          <Component {...pageProps} />
-        ) : (
-          <Layout>
+    <>
+      <SessionProvider session={session}>
+        <div>
+          {router.pathname !== "/" && <NavBar />}
+          {router.pathname === "/" || session === null ? (
             <Component {...pageProps} />
-          </Layout>
-        )}
-        <div className="mx-4 h-1/6">
-          <FooterBar />
+          ) : (
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          )}
         </div>
-      </div>
-    </SessionProvider>
+      </SessionProvider>
+      <FooterBar />
+    </>
   );
 };
 
