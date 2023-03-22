@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Input } from "react-daisyui";
 import { api } from "~/utils/api";
 
 export default function NameField({
@@ -24,9 +23,10 @@ export default function NameField({
   };
 
   return (
-    <Input
-      className="mx-4 bg-black text-4xl text-base-content"
+    <input
+      className="mx-4 text-4xl text-base-content bg-transparent outline-none w-1/2"
       value={newName}
+      placeholder="Untitled"
       maxLength={50}
       minLength={1}
       onChange={(e) => {
