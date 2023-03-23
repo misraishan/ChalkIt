@@ -6,9 +6,15 @@ import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../../common/components/handlerComponents/Loading";
 import { ToastType } from "../../common/layout";
-import EditorWindow from "../../common/components/notes/EditorWindow";
 import NameField from "../../common/components/notes/NameField";
 import Head from "next/head";
+import dynamic from "next/dynamic";
+const EditorWindow = dynamic(
+  () => import("../../common/components/notes/EditorWindow"),
+  {
+    ssr: false,
+  }
+);
 
 export default function NotesEditor({
   noteId,
