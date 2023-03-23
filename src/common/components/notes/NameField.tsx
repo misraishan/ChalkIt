@@ -14,7 +14,7 @@ export default function NameField({
 
   const renameNote = api.notes.updateNote.useMutation();
   const renameFucntion = () => {
-    if (name !== name) {
+    if (name !== newName) {
       renameNote.mutate({
         id: id,
         name: newName,
@@ -24,13 +24,12 @@ export default function NameField({
 
   return (
     <input
-      className="mx-4 text-4xl text-base-content bg-transparent outline-none w-1/2"
+      className="mx-4 w-1/2 bg-transparent text-4xl text-base-content outline-none"
       value={newName}
       placeholder="Untitled"
       maxLength={50}
       minLength={1}
       onChange={(e) => {
-        console.log("e.target.value", e.target.value);
         const newVal = e.target.value;
         if (newVal === name) {
           setNewName(name);
@@ -41,7 +40,6 @@ export default function NameField({
         renameFucntion();
       }}
       disabled={!hasWrite}
-      color="accent"
     />
   );
 }
