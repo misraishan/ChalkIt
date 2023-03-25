@@ -18,6 +18,7 @@ import {
 } from "@tanstack/react-table";
 import { Modal } from "react-daisyui";
 import ShareSheet from "../shareSheet/ShareSheet";
+import Loading from "../handlerComponents/Loading";
 
 const timeFormat = (time: Date) => {
   return `${time.toLocaleDateString()} ${
@@ -68,6 +69,8 @@ export default function FileTable({
   setFolderData: (folder: Folders[] | null | undefined) => void;
 }) {
   const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setNotesData(notesData);
@@ -125,6 +128,7 @@ export default function FileTable({
 
   return (
     <div className="flex table w-full flex-col overflow-x-hidden overflow-y-scroll">
+      {isLoading && <Loading />}
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -175,7 +179,15 @@ export default function FileTable({
             <tr
               key={row.id}
               className="hover:base-100 h-36 cursor-pointer hover:from-transparent"
+              onLoad={() => {
+                if (row.original.type === ColumnType.Note) {
+                  void router.prefetch(`/notes/${row.original.id}`);
+                } else {
+                  void router.prefetch(`/home/${row.original.id}`);
+                }
+              }}
               onClick={() => {
+                setIsLoading(true);
                 if (row.original.type === ColumnType.Note) {
                   void router.push(`/notes/${row.original.id}`);
                 } else {
