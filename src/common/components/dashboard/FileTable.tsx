@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
 import { type Notes, type Folders } from "@prisma/client";
 import { api } from "~/utils/api";
@@ -18,7 +18,8 @@ import {
 } from "@tanstack/react-table";
 import { Modal } from "react-daisyui";
 import ShareSheet from "../shareSheet/ShareSheet";
-import Loading from "../handlerComponents/Loading";
+import Link from "next/link";
+import UserContext from "~/contexts/UserContext";
 
 const timeFormat = (time: Date) => {
   return `${time.toLocaleDateString()} ${
@@ -70,13 +71,12 @@ export default function FileTable({
 }) {
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     setNotesData(notesData);
     setFolderData(folderData);
   }, [setNotesData, notesData, setFolderData, folderData]);
 
+  const { setFolders, folders, setNotes, notes } = useContext(UserContext);
   const [shareSheetOpen, setShareSheetOpen] = useState(false);
   const [shareSheetData, setShareSheetData] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -128,7 +128,6 @@ export default function FileTable({
 
   return (
     <div className="flex table w-full flex-col overflow-x-hidden overflow-y-scroll">
-      {isLoading && <Loading />}
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -178,26 +177,21 @@ export default function FileTable({
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="hover:base-100 h-36 cursor-pointer hover:from-transparent"
-              onLoad={() => {
-                if (row.original.type === ColumnType.Note) {
-                  void router.prefetch(`/notes/${row.original.id}`);
-                } else {
-                  void router.prefetch(`/home/${row.original.id}`);
-                }
-              }}
-              onClick={() => {
-                setIsLoading(true);
-                if (row.original.type === ColumnType.Note) {
-                  void router.push(`/notes/${row.original.id}`);
-                } else {
-                  void router.push(`/home/${row.original.id}`);
-                }
-              }}
+              className="hover:base-100 h-24 cursor-pointer hover:from-transparent"
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  <Link
+                    href={
+                      row.original.type === ColumnType.Note
+                        ? `/notes/${row.original.id}`
+                        : `/home/${row.original.id}`
+                    }
+                    className="flex h-24 cursor-pointer
+                    flex-row items-center hover:from-transparent"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </Link>
                 </td>
               ))}
               <td>
@@ -273,11 +267,15 @@ export default function FileTable({
                   setFolderData(
                     folderData?.filter((folder) => folder.id !== modalData?.id)
                   );
+                  setFolders(
+                    folders?.filter((folder) => folder.id !== modalData?.id)
+                  );
                 } else {
                   deleteNote.mutate({ id: modalData?.id });
                   setNotesData(
                     notesData?.filter((note) => note.id !== modalData?.id)
                   );
+                  setNotes(notes?.filter((note) => note.id !== modalData?.id));
                 }
                 setModalOpen(false);
               }}

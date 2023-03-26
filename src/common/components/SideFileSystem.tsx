@@ -1,6 +1,5 @@
 import Image from "next/image";
-import { type Session } from "next-auth";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button, Modal } from "react-daisyui";
 import {
   HiOutlineFolderAdd,
@@ -11,7 +10,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { buildFileTree, type TreeNode } from "../helpers/buildFileTree";
 import FileTree from "./FileTree";
-import UserContext from "~/contexts/UserContext";
+import { ToastType } from "../layout";
+import { useSession } from "next-auth/react";
+import { api } from "~/utils/api";
+import { Alert, Toast } from "react-daisyui";
+import type { Folders, Notes } from "@prisma/client";
 
 enum NewType {
   folder = "folder",
@@ -20,20 +23,33 @@ enum NewType {
 }
 
 export default function SideFileSystem({
-  session,
-  handleNewNote,
-  handleNewFolder,
+  userInfo,
 }: {
-  session: Session;
-  handleNewNote: (name: string, folderId: string | null) => void;
-  handleNewFolder: (name: string, parentId: string | null) => void;
+  userInfo: {
+    folders: Folders[] | null | undefined;
+    setFolders: (folders: Folders[] | null | undefined) => void;
+    notes: Notes[] | null | undefined;
+    setNotes: (notes: Notes[] | null | undefined) => void;
+    userId: string | null | undefined;
+    setUserId: (userId: string | null | undefined) => void;
+  };
 }) {
+  const session = useSession();
   const router = useRouter();
   const [name, setName] = useState("");
   const [visible, setVisible] = useState(false);
   const [newType, setType] = useState("" as NewType);
-  const user = useContext(UserContext);
+  const user = api.users.getUser.useQuery({
+    id: session?.data?.user.id as string,
+  }).data;
 
+  const { folders, setFolders, notes, setNotes, userId } = userInfo;
+
+  const [toast, setToast] = useState({
+    show: false,
+    message: "",
+    type: ToastType.Info,
+  });
   const toggleVisible = useCallback(
     ({ type }: { type: NewType }) => {
       if (type === NewType.null) {
@@ -47,28 +63,83 @@ export default function SideFileSystem({
     [visible]
   );
 
+  const newFolder = api.folders.createFolder.useMutation();
+  const newNote = api.notes.createNote.useMutation();
+
+  const updateToast = (message: string, type: ToastType) => {
+    setToast({
+      show: true,
+      message,
+      type,
+    });
+    setTimeout(() => {
+      setToast({
+        show: false,
+        message: "",
+        type: ToastType.Info,
+      });
+    }, 3000);
+  };
+
+  const handleCreateFolder = useCallback(
+    (name: string, parentId: string | null) => {
+      void newFolder
+        .mutateAsync({
+          name,
+          parentId,
+        })
+        .then((res) => {
+          if (res) {
+            updateToast("Folder created", ToastType.Success);
+            setFolders(folders ? [...folders, res] : [res]);
+          }
+        });
+      updateToast("Creating folder...", ToastType.Info);
+    },
+    [folders, newFolder, setFolders]
+  );
+
+  const handleCreateNote = useCallback(
+    (name: string, folderId: string | null) => {
+      void newNote
+        .mutateAsync({
+          name,
+          folderId,
+        })
+        .then((res) => {
+          if (res) {
+            updateToast("Note created", ToastType.Success);
+            setNotes(notes ? [...notes, res] : [res]);
+          }
+        });
+
+      updateToast("Creating...", ToastType.Info);
+    },
+    [newNote, notes, setNotes]
+  );
+
   const createNew = useCallback(() => {
     if (newType === NewType.folder) {
       const parentId =
         router.query.folderId && (router.query.folderId[0] as string | null);
       if (parentId !== "home" && parentId !== undefined) {
-        handleNewFolder(name, parentId);
+        handleCreateNote(name, parentId);
       } else {
-        handleNewFolder(name, null);
+        handleCreateFolder(name, null);
       }
     } else if (newType === NewType.note) {
       const folderId =
         router.query.folderId && (router.query.folderId[0] as string | null);
       if (folderId !== "home" && folderId !== undefined) {
-        handleNewNote(name, folderId);
+        handleCreateNote(name, folderId);
       } else {
-        handleNewNote(name, null);
+        handleCreateFolder(name, null);
       }
     }
     toggleVisible({ type: NewType.null });
   }, [
-    handleNewFolder,
-    handleNewNote,
+    handleCreateFolder,
+    handleCreateNote,
     name,
     newType,
     router.query.folderId,
@@ -77,44 +148,42 @@ export default function SideFileSystem({
 
   const [flatList, setFlatList] = useState<TreeNode[]>([]);
   useMemo(() => {
-    if (user) {
-      const flatList = user.folders?.map((folder) => ({
+    if (folders || notes) {
+      const flatList = folders?.map((folder) => ({
         id: folder.id,
         name: folder.name,
         parentId: folder.parentId,
         type: "folder",
         children: null,
       }));
-      const notes = user.notes?.map((note) => ({
+      const flatNotes = notes?.map((note) => ({
         id: note.id,
         name: note.name,
         parentId: note.folderId,
         type: "note",
         children: null,
       }));
-      setFlatList([...(flatList || []), ...(notes || [])]);
+      setFlatList([...(flatList || []), ...(flatNotes || [])]);
     }
-  }, [user]);
+  }, [folders, notes]);
 
   const tree = buildFileTree(flatList);
 
-  return (
+  return user ? (
     <div className="w-1/5">
       <div className="flex h-screen flex-col">
         <div className="flex flex-row items-center p-4">
           <div className="avatar">
             <div className="mask mask-circle h-14 w-14">
               <Image
-                src={session?.user.image || ""}
+                src={session?.data?.user.image || ""}
                 width={56}
                 height={56}
                 alt={"Profile Picture"}
               />
             </div>
           </div>
-          <div className="mx-2 justify-start text-start text-xl">
-            {user.userId}
-          </div>
+          <div className="mx-2 justify-start text-start text-xl">{userId}</div>
         </div>
 
         <div className="flex flex-row justify-center children:mx-2">
@@ -195,6 +264,13 @@ export default function SideFileSystem({
           </button>
         </Modal.Actions>
       </Modal>
+      {toast.show && (
+        <Toast vertical="bottom" horizontal="end">
+          <Alert status={toast.type}>{toast.message}</Alert>
+        </Toast>
+      )}
     </div>
+  ) : (
+    <></>
   );
 }
