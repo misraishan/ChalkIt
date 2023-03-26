@@ -6,7 +6,6 @@ import { Alert, Toast } from "react-daisyui";
 import { api } from "~/utils/api";
 import Loading from "../../common/components/handlerComponents/Loading";
 import { ToastType } from "../../common/layout";
-import NameField from "../../common/components/notes/NameField";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 const EditorWindow = dynamic(
@@ -112,47 +111,23 @@ export default function NotesEditor({
           }`}
         />
       </Head>
-      {user ? (
-        <>
-          {note ? (
-            <div className="h-screen">
-              {note?.name && (
-                <NameField name={note.name} id={note.id} hasWrite={hasWrite} />
-              )}
-              <EditorWindow
-                editable={hasWrite}
-                noteId={note.id}
-                updateToast={updateToast}
-                userName={user?.name || "Anonymous"}
-              />
-            </div>
-          ) : (
-            <Loading />
-          )}
-          {toast.show && (
-            <Toast vertical="bottom" horizontal="end">
-              <Alert status={toast.type}>{toast.message}</Alert>
-            </Toast>
-          )}
-        </>
+      {note ? (
+        <div className="h-screen">
+          <EditorWindow
+            editable={hasWrite}
+            noteId={note.id}
+            updateToast={updateToast}
+            userName={user?.name || "Anonymous"}
+            noteName={note.name}
+          />
+        </div>
       ) : (
-        <>
-          {note ? (
-            <div className="h-screen">
-              {note?.name && (
-                <NameField name={note.name} id={note.id} hasWrite={hasWrite} />
-              )}
-              <EditorWindow
-                editable={hasWrite}
-                noteId={note.id}
-                updateToast={updateToast}
-                userName={"Anonymous"}
-              />
-            </div>
-          ) : (
-            <Loading />
-          )}
-        </>
+        <Loading />
+      )}
+      {toast.show && (
+        <Toast vertical="bottom" horizontal="end">
+          <Alert status={toast.type}>{toast.message}</Alert>
+        </Toast>
       )}
     </>
   );
