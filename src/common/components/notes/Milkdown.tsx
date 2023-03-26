@@ -1,6 +1,6 @@
 import { Editor, editorViewOptionsCtx, rootCtx } from "@milkdown/core";
 import { Milkdown, useEditor } from "@milkdown/react";
-import { commonmark } from "@milkdown/preset-commonmark";
+import { codeBlockSchema, commonmark } from "@milkdown/preset-commonmark";
 import { gfm } from "@milkdown/preset-gfm";
 import { collab, collabServiceCtx } from "@milkdown/plugin-collab";
 import { Doc } from "yjs";
@@ -15,23 +15,18 @@ import { nord } from "@milkdown/theme-nord";
 import { cursor } from "@milkdown/plugin-cursor";
 import { clipboard } from "@milkdown/plugin-clipboard";
 import { history } from "@milkdown/plugin-history";
-import { usePluginViewFactory } from "@prosemirror-adapter/react";
+import {
+  useNodeViewFactory,
+  usePluginViewFactory,
+} from "@prosemirror-adapter/react";
 import { tooltip, TooltipView } from "./milkdownComponents/Tooltip";
 import { defaultValueCtx } from "@milkdown/core";
+import { $view } from "@milkdown/utils";
+import { refractor } from "refractor";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
-import markdown from "refractor/lang/markdown";
-import css from "refractor/lang/css";
-import javascript from "refractor/lang/javascript";
-import typescript from "refractor/lang/typescript";
-import jsx from "refractor/lang/jsx";
-import tsx from "refractor/lang/tsx";
-import c from "refractor/lang/c";
-import rs from "refractor/lang/rust";
-import java from "refractor/lang/java";
-import kotlin from "refractor/lang/kotlin";
-import python from "refractor/lang/python";
+import { CodeBlock } from "./milkdownComponents/CodeBlock";
 
 const tryNowValue = `# Welcome to ChalkIt!
 ## The markdown editor for the modern web.
@@ -47,6 +42,7 @@ export default function MilkdownEditor({
   editable: boolean;
 }) {
   const pluginViewFactory = usePluginViewFactory();
+  const nodeViewFactory = useNodeViewFactory();
 
   const editor = useEditor((root) => {
     return Editor.make()
@@ -60,21 +56,10 @@ export default function MilkdownEditor({
 
         roomName === "try" && ctx.set(defaultValueCtx, tryNowValue);
 
-        ctx.set(prismConfig.key, {
-          configureRefractor: (refractor) => {
-            refractor.register(markdown);
-            refractor.register(css);
-            refractor.register(javascript);
-            refractor.register(typescript);
-            refractor.register(jsx);
-            refractor.register(tsx);
-            refractor.register(c);
-            refractor.register(rs);
-            refractor.register(java);
-            refractor.register(kotlin);
-            refractor.register(python);
-          },
-        });
+        ctx.update(prismConfig.key, (prev) => ({
+          ...prev,
+          configureRefractor: () => refractor,
+        }));
 
         ctx.set(indentConfig.key, {
           type: "tab",
@@ -95,7 +80,12 @@ export default function MilkdownEditor({
       .use(cursor)
       .use(history)
       .use(tooltip)
-      .use(clipboard);
+      .use(clipboard)
+      .use(
+        $view(codeBlockSchema.node, () =>
+          nodeViewFactory({ component: CodeBlock })
+        )
+      );
   }, []);
 
   if (roomName !== "try") {
