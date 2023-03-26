@@ -23,6 +23,7 @@ import { tooltip, TooltipView } from "./milkdownComponents/Tooltip";
 import { defaultValueCtx } from "@milkdown/core";
 import { $view } from "@milkdown/utils";
 import { refractor } from "refractor";
+import { trailing } from "@milkdown/plugin-trailing";
 import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
@@ -81,6 +82,7 @@ export default function MilkdownEditor({
       .use(history)
       .use(tooltip)
       .use(clipboard)
+      .use(trailing)
       .use(
         $view(codeBlockSchema.node, () =>
           nodeViewFactory({ component: CodeBlock })
@@ -97,9 +99,12 @@ export default function MilkdownEditor({
       { connect: true }
     );
 
-    wsProvider.awareness.setLocalStateField("user", {
+    const user = {
       name: userName,
       color: randomColor(),
+    };
+    wsProvider.awareness.setLocalStateField("user", {
+      ...user,
     });
 
     editor.get()?.action((ctx) => {

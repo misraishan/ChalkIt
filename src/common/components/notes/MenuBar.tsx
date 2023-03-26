@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Dropdown } from "react-daisyui";
+import { Avatar, Button, Dropdown, Tooltip } from "react-daisyui";
 import { HiOutlineDownload } from "react-icons/hi";
 import { HiOutlineShare } from "react-icons/hi2";
 import { api } from "~/utils/api";
@@ -73,6 +73,16 @@ export default function MenuBar({
         disabled={!hasWrite}
       />
       <div className="flex items-center">
+        <Avatar.Group>
+          {/* {collaborators.map((collaborator, idx) => (
+            <Tooltip key={idx} message={collaborator.name}>
+              <Avatar
+                letters={`${collaborator.name[0]?.toUpperCase() as string}`}
+                className={`bg-[${collaborator.color}`}
+              />
+            </Tooltip>
+          ))} */}
+        </Avatar.Group>
         <Button
           className="mr-4"
           onClick={(e) => {
