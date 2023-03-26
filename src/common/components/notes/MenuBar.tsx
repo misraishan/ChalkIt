@@ -73,7 +73,7 @@ export default function MenuBar({
         disabled={!hasWrite}
       />
       <div className="flex items-center">
-        <Avatar.Group>
+        {/* <Avatar.Group> */}
           {/* {collaborators.map((collaborator, idx) => (
             <Tooltip key={idx} message={collaborator.name}>
               <Avatar
@@ -82,7 +82,7 @@ export default function MenuBar({
               />
             </Tooltip>
           ))} */}
-        </Avatar.Group>
+        {/* </Avatar.Group> */}
         <Button
           className="mr-4"
           onClick={(e) => {
