@@ -45,7 +45,7 @@ export default function MenuBar({
     const file = new Blob([content as string], { type: "text/plain" });
     element.href = URL.createObjectURL(file);
     element.download = `${newName}.${type === "markdown" ? "md" : type}`;
-    document.body.appendChild(element);
+    document.body.appendChild(element); // Required for this to work in FireFox
     element.click();
 
     // Remove element from DOM
@@ -73,15 +73,14 @@ export default function MenuBar({
         disabled={!hasWrite}
       />
       <div className="flex items-center">
-        <Button className="mr-4">
-          <HiOutlineShare
-            size={24}
-            className="text-primary"
-            onClick={(e) => {
-              e.stopPropagation();
-              setShareSheetOpen(true);
-            }}
-          />
+        <Button
+          className="mr-4"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShareSheetOpen(true);
+          }}
+        >
+          <HiOutlineShare size={24} className="text-primary" />
         </Button>
         <Dropdown className="mr-4" horizontal="left">
           <Dropdown.Toggle>
@@ -98,8 +97,6 @@ export default function MenuBar({
               Markdown
             </Dropdown.Item>
             <Dropdown.Item onClick={() => download("html")}>HTML</Dropdown.Item>
-            {/* <Dropdown.Item>PDF</Dropdown.Item>
-            <Dropdown.Item>JSON</Dropdown.Item> */}
           </Dropdown.Menu>
         </Dropdown>
       </div>
