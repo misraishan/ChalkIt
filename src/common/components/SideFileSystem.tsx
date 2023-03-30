@@ -123,7 +123,7 @@ export default function SideFileSystem({
       const parentId =
         router.query.folderId && (router.query.folderId[0] as string | null);
       if (parentId !== "home" && parentId !== undefined) {
-        handleCreateNote(name, parentId);
+        handleCreateFolder(name, parentId);
       } else {
         handleCreateFolder(name, null);
       }
@@ -133,7 +133,7 @@ export default function SideFileSystem({
       if (folderId !== "home" && folderId !== undefined) {
         handleCreateNote(name, folderId);
       } else {
-        handleCreateFolder(name, null);
+        handleCreateNote(name, null);
       }
     }
     toggleVisible({ type: NewType.null });
