@@ -175,20 +175,21 @@ export default function FileTable({
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="hover:base-100 h-24 cursor-pointer hover:from-transparent"
-            >
+            <tr key={row.id} className="hover h-24 cursor-pointer">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td
+                  key={cell.id}
+                  onMouseEnter={() => {
+                    // console.log(cell);
+                  }}
+                >
                   <Link
                     href={
                       row.original.type === ColumnType.Note
                         ? `/notes/${row.original.id}`
                         : `/home/${row.original.id}`
                     }
-                    className="flex h-24 cursor-pointer
-                    flex-row items-center hover:from-transparent"
+                    className="flex h-24 cursor-pointer flex-row items-center"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </Link>
