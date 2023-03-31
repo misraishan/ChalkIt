@@ -18,30 +18,32 @@ export default function EditorWindow({
   updateToast: (message: string, type: ToastType) => void;
 }) {
   return (
-    <MilkdownProvider>
-      <ProsemirrorAdapterProvider>
-        <MenuBar name={noteName} id={noteId} hasWrite={editable} />
-        <div
-          className="m-4 h-[93vh] overflow-y-scroll rounded-2xl border-2 border-accent outline-none"
-          onClick={() => {
-            const editor = document.querySelector(".milkdown");
-            const textbox: HTMLAreaElement | undefined | null =
-              editor?.querySelector("[role=textbox]");
-            textbox?.focus();
-          }}
-        >
-          <MilkdownEditor
-            roomName={noteId}
-            userName={userName}
-            editable={editable}
-          />
-          {editable && (
-            <div className="sticky top-0 left-0 right-0 bottom-0 m-2 flex justify-center p-8">
-              <FloatingMenu />
-            </div>
-          )}
-        </div>
-      </ProsemirrorAdapterProvider>
-    </MilkdownProvider>
+    <div className="flex h-screen flex-col">
+      <MilkdownProvider>
+        <ProsemirrorAdapterProvider>
+          <MenuBar name={noteName} id={noteId} hasWrite={editable} />
+          <div
+            className="m-4 flex-1 rounded-2xl border-2 border-accent outline-none"
+            onClick={() => {
+              const editor = document.querySelector(".milkdown");
+              const textbox: HTMLAreaElement | undefined | null =
+                editor?.querySelector("[role=textbox]");
+              textbox?.focus();
+            }}
+          >
+            <MilkdownEditor
+              roomName={noteId}
+              userName={userName}
+              editable={editable}
+            />
+            {editable && (
+              <div className="sticky top-0 left-0 right-0 bottom-0 m-2 flex justify-center p-8">
+                <FloatingMenu />
+              </div>
+            )}
+          </div>
+        </ProsemirrorAdapterProvider>
+      </MilkdownProvider>
+    </div>
   );
 }

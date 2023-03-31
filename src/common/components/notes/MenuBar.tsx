@@ -55,7 +55,7 @@ export default function MenuBar({
   return (
     <div className="flex items-center justify-between">
       <input
-        className="mx-4 w-1/2 bg-transparent text-4xl text-base-content outline-none"
+        className="mx-4 w-1/2 rounded-md bg-transparent text-4xl text-base-content outline-none hover:outline hover:outline-secondary"
         value={newName}
         placeholder="Untitled"
         maxLength={50}

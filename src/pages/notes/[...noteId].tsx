@@ -112,7 +112,7 @@ export default function NotesEditor({
         />
       </Head>
       {note ? (
-        <div className="h-screen">
+        <div>
           <EditorWindow
             editable={hasWrite}
             noteId={note.id}
