@@ -127,19 +127,14 @@ export default function FileTable({
   const deleteFolder = api.folders.deleteFolder.useMutation();
 
   return (
-    <div className="flex table w-full flex-col overflow-x-hidden overflow-y-scroll">
-      <table className="w-full">
+    <div className="table-view">
+      <table className="w-full h-full rounded-2xl mx-auto">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className={
-                    header.column.getIsSorted()
-                      ? "outline- bg-base-100 outline outline-purple-400"
-                      : ""
-                  }
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {header.isPlaceholder ? null : (
@@ -173,9 +168,9 @@ export default function FileTable({
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover h-24 cursor-pointer">
+            <tr key={row.id} className="h-24 cursor-pointer">
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
@@ -196,7 +191,7 @@ export default function FileTable({
                 </td>
               ))}
               <td>
-                <div className="flex flex-row">
+                <div className="flex flex-row justify-center">
                   {row.original.type === ColumnType.Note ? (
                     <HiOutlineShare
                       size={28}

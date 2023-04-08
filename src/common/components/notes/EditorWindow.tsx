@@ -23,7 +23,7 @@ export default function EditorWindow({
         <ProsemirrorAdapterProvider>
           <MenuBar name={noteName} id={noteId} hasWrite={editable} />
           <div
-            className="m-4 flex-1 rounded-2xl border-2 border-accent outline-none"
+            className="m-4 flex-1 rounded-2xl outline-none"
             onClick={() => {
               const editor = document.querySelector(".milkdown");
               const textbox: HTMLAreaElement | undefined | null =

@@ -5,9 +5,10 @@ import { SessionProvider } from "next-auth/react";
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
+import "~/styles/neumorphism.css"
 import NavBar from "../common/components/NavBar";
 import { useRouter } from "next/router";
-import FooterBar from "../common/components/FooterBar";
+// import FooterBar from "../common/components/FooterBar";
 import Layout from "~/common/layout";
 import SideFileSystem from "~/common/components/SideFileSystem";
 import type { Folders, Notes } from "@prisma/client";
@@ -29,37 +30,38 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <div>
           {router.pathname !== "/" && <NavBar />}
           {router.pathname !== "/" ? (
-            <div className="flex h-screen flex-row">
-              <SideFileSystem
-                userInfo={{
-                  folders,
-                  setFolders,
-                  notes,
-                  setNotes,
-                  userId,
-                  setUserId,
-                }}
-              />
-              <div className="w-0.5 bg-accent"></div>
-              <Layout
-                userInfo={{
-                  folders,
-                  setFolders,
-                  notes,
-                  setNotes,
-                  userId,
-                  setUserId,
-                }}
-              >
-                <Component {...pageProps} />
-              </Layout>
+            <div className="flex h-screen flex-auto justify-center">
+              <div className="w-11/12 flex">
+                <SideFileSystem
+                  userInfo={{
+                    folders,
+                    setFolders,
+                    notes,
+                    setNotes,
+                    userId,
+                    setUserId,
+                  }}
+                />
+                <Layout
+                  userInfo={{
+                    folders,
+                    setFolders,
+                    notes,
+                    setNotes,
+                    userId,
+                    setUserId,
+                  }}
+                >
+                  <Component {...pageProps} />
+                </Layout>
+              </div>
             </div>
           ) : (
             <Component {...pageProps} />
           )}
         </div>
       </SessionProvider>
-      <FooterBar />
+      {/* <FooterBar /> */}
     </>
   );
 };

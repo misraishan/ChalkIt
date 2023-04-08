@@ -1,0 +1,123 @@
+@tailwind utilities;
+@tailwind base;
+
+@layer utilities {
+    .neu-shadow-base-100 {
+        box-shadow: 3px 3px 3px #e2e3e5,
+                -3px -3px 3px #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+        .neu-shadow-base-100 {
+            box-shadow: 3px 3px 3px #1e222a,
+                -3px -3px 3px #2a303c;
+        }
+    }
+
+    .neu-shadow-base-200 {
+        box-shadow: 6px 6px 6px #e2e3e5,
+                -6px -6px 6px #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .neu-shadow-base-200 {
+            box-shadow: 6px 6px 6px #1e222a,
+                -6px -6px 6px #2a303c;
+        }
+    }
+}
+
+.dropdown {
+    @apply bg-base-100 rounded-xl;
+    @apply shadow-none;
+    @apply border-none outline-none;
+}
+
+.btn:not(.btn-group button):not(.btn-primary):not(.btn-secondary) {
+    @apply outline-none;
+    @apply bg-base-100 rounded-xl;
+    @apply shadow-md neu-shadow-base-200;
+}
+
+.btn-group {
+    @apply bg-base-100 rounded-xl;
+    @apply shadow-lg neu-shadow-base-200;
+}
+
+.btn:hover.btn:not(.btn-group button) {
+    @apply bg-base-200 rounded-xl;
+    @apply neu-inset;
+}
+
+.btn:active {
+    @apply bg-base-300 rounded-xl shadow-inner;
+}
+
+input {
+    @apply bg-base-100 rounded-xl;
+    @apply neu-inset;
+}
+
+input:focus {
+    @apply outline outline-primary;
+}
+
+.neu-card {
+    @apply bg-base-100 rounded-xl;
+    @apply mb-8 mr-4;
+    @apply shadow-lg neu-shadow-base-100;
+}
+
+a {
+    @apply bg-transparent;
+}
+
+.table-view {
+    @apply bg-base-100 rounded-xl;
+    @apply shadow-md neu-shadow-base-200;
+    @apply p-2 m-2;
+}
+
+thead>tr>th {
+    @apply rounded-2xl bg-transparent;
+}
+
+thead>tr>th:hover {
+    @apply bg-base-100 shadow-lg neu-shadow-base-100;
+}
+
+thead>tr>th {
+    @apply p-2;
+}
+
+tbody>tr:hover {
+    @apply bg-base-300 transition duration-300 ease-in-out;
+}
+
+tr>td {
+    @apply p-2;
+}
+
+body {
+    @apply bg-base-100;
+}
+
+@layer utilities {
+    .neu-inset {
+        @apply bg-base-100 rounded-xl;
+        box-shadow: inset 5px 5px 6px #e2e3e5,
+            inset -5px -5px 6px #ffffff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        .neu-inset {
+            box-shadow: inset 5px 5px 6px #1e222a,
+                inset -5px -5px 6px #2a303c;
+        }
+
+    }
+}
+
+.milkdown {
+    @apply bg-base-100;
+    @apply neu-inset;
+}

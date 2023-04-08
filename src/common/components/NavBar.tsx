@@ -6,17 +6,17 @@ export default function NavBar() {
 
   return (
     <div className="flex flex-auto justify-center">
-      <Navbar className="my-4 w-11/12 rounded-2xl bg-black">
+      <Navbar className="my-4 w-11/12 rounded-2xl neu-card">
         <Navbar.Start>
-          <Button color="primary">Chalkit</Button>
+          <Button color="ghost" href="/home">Chalkit</Button>
         </Navbar.Start>
         <Navbar.End>
           {session ? (
             <div>
               <Input placeholder="Search 🔎" className="mx-4" />
               <Button
-                color="error"
-                className="mx-1"
+                color="ghost"
+                className="mx-1 text-error"
                 onClick={() => void signOut()}
               >
                 Sign out
@@ -24,7 +24,7 @@ export default function NavBar() {
             </div>
           ) : (
             <div>
-              <Button color="primary" onClick={() => void signIn()}>
+              <Button color="ghost" onClick={() => void signIn()}>
                 Sign In
               </Button>
             </div>

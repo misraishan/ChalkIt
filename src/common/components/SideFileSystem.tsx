@@ -170,7 +170,7 @@ export default function SideFileSystem({
   const tree = buildFileTree(flatList);
 
   return user ? (
-    <div className="w-1/5">
+    <div className="w-1/7 neu-card">
       <div className="flex h-screen flex-col">
         <div className="flex flex-row items-center p-4">
           <div className="avatar">
@@ -188,44 +188,31 @@ export default function SideFileSystem({
 
         <div className="flex flex-row justify-center children:mx-2">
           <Link href={"/home"} className="mx-2">
-            <Button
-              color="ghost"
-              className="border-purple-400 hover:bg-purple-400 hover:text-white"
-            >
+            <Button color="ghost">
               <HiOutlineHome size={24} />
             </Button>
           </Link>
           <Button
             color="ghost"
             onClick={() => toggleVisible({ type: NewType.note })}
-            className="mx-2 border border-purple-400 hover:bg-purple-400 hover:text-white"
+            className="mx-2 "
           >
             <HiOutlineDocumentAdd size={24} />
           </Button>
           <Button
             color="ghost"
             onClick={() => toggleVisible({ type: NewType.folder })}
-            className="mx-2 border border-purple-400 hover:bg-purple-400 hover:text-white"
+            className="mx-2"
           >
             <HiOutlineFolderAdd size={24} />
           </Button>
         </div>
         <div className="flex flex-row justify-center children:m-2">
           <Link href={"/shared"}>
-            <Button
-              color="ghost"
-              className="border-blue-400 hover:bg-blue-400 hover:text-white"
-            >
-              Shared
-            </Button>
+            <Button color="ghost">Shared</Button>
           </Link>
           <Link href={"/favorites"}>
-            <Button
-              color="ghost"
-              className="border-blue-400 hover:bg-blue-400 hover:text-white"
-            >
-              Favorites
-            </Button>
+            <Button color="ghost">Favorites</Button>
           </Link>
         </div>
 

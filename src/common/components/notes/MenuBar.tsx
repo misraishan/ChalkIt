@@ -55,7 +55,7 @@ export default function MenuBar({
   return (
     <div className="flex items-center justify-between">
       <input
-        className="mx-4 w-1/2 rounded-md bg-transparent text-4xl text-base-content outline-none hover:outline hover:outline-secondary"
+        className="mx-4 w-1/2 rounded-md bg-transparent text-4xl text-base-content outline-none"
         value={newName}
         placeholder="Untitled"
         maxLength={50}
@@ -89,14 +89,14 @@ export default function MenuBar({
             e.stopPropagation();
             setShareSheetOpen(true);
           }}
+          color="primary"
         >
-          <HiOutlineShare size={24} className="text-primary" />
+          <HiOutlineShare size={24} />
         </Button>
         <Dropdown className="mr-4" horizontal="left">
           <Dropdown.Toggle>
             <HiOutlineDownload
               size={24}
-              className="text-primary"
               onClick={(e) => {
                 e.stopPropagation();
               }}
