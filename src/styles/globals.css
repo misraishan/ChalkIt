@@ -114,3 +114,9 @@
         opacity: 1;
     }
 }
+
+/* change scrollbar color */
+::-webkit-scrollbar {
+    color: black;
+    background-color: transparent;
+}
