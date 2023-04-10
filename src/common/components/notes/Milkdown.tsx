@@ -11,6 +11,7 @@ import {
   indentConfig,
   type IndentConfigOptions,
 } from "@milkdown/plugin-indent";
+import { upload, uploadConfig } from '@milkdown/plugin-upload';
 import { nord } from "@milkdown/theme-nord";
 import { cursor } from "@milkdown/plugin-cursor";
 import { clipboard } from "@milkdown/plugin-clipboard";
@@ -28,6 +29,7 @@ import "@milkdown/theme-nord/style.css";
 import "prism-themes/themes/prism-nord.css";
 
 import { CodeBlock } from "./milkdownComponents/CodeBlock";
+import { uploader } from "~/common/helpers/uploader";
 
 const tryNowValue = `# Welcome to ChalkIt!
 ## The markdown editor for the modern web.
@@ -72,6 +74,12 @@ export default function MilkdownEditor({
             component: TooltipView,
           }),
         });
+
+        ctx.update(uploadConfig.key, (prev) => ({
+          ...prev,
+          uploader,
+        }));
+    
       })
       .use(commonmark)
       .use(gfm)
@@ -83,6 +91,7 @@ export default function MilkdownEditor({
       .use(tooltip)
       .use(clipboard)
       .use(trailing)
+      .use(upload)
       .use(
         $view(codeBlockSchema.node, () =>
           nodeViewFactory({ component: CodeBlock })
