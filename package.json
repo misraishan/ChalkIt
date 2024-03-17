@@ -57,7 +57,7 @@
     "y-protocols": "^1.0.5",
     "y-websocket": "^1.4.6",
     "yjs": "^13.5.48",
-    "zod": "^3.22.3"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/eslint": "^8.21.1",
@@ -71,7 +71,7 @@
     "autoprefixer": "^10.4.7",
     "eslint": "^8.30.0",
     "eslint-config-next": "13.1.6",
-    "postcss": "^8.4.32",
+    "postcss": "^8.4.33",
     "prettier": "^2.8.1",
     "prettier-plugin-tailwindcss": "^0.2.1",
     "prisma": "^4.9.0",
